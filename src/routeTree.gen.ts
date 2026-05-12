@@ -16,6 +16,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
+import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
 import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
@@ -54,6 +56,16 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ApiAiValueRoute = ApiAiValueRouteImport.update({
+  id: '/api/ai/value',
+  path: '/api/ai/value',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiSearchRoute = ApiAiSearchRouteImport.update({
+  id: '/api/ai/search',
+  path: '/api/ai/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedListingsNewRoute =
   AuthenticatedListingsNewRouteImport.update({
     id: '/listings/new',
@@ -81,6 +93,8 @@ export interface FileRoutesByFullPath {
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/api/ai/search': typeof ApiAiSearchRoute
+  '/api/ai/value': typeof ApiAiValueRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -92,6 +106,8 @@ export interface FileRoutesByTo {
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/api/ai/search': typeof ApiAiSearchRoute
+  '/api/ai/value': typeof ApiAiValueRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,6 +121,8 @@ export interface FileRoutesById {
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
   '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
+  '/api/ai/search': typeof ApiAiSearchRoute
+  '/api/ai/value': typeof ApiAiValueRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,6 +136,8 @@ export interface FileRouteTypes {
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/api/ai/search'
+    | '/api/ai/value'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -129,6 +149,8 @@ export interface FileRouteTypes {
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/api/ai/search'
+    | '/api/ai/value'
   id:
     | '__root__'
     | '/'
@@ -141,6 +163,8 @@ export interface FileRouteTypes {
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
     | '/_authenticated/listings/new'
+    | '/api/ai/search'
+    | '/api/ai/value'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -148,6 +172,8 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   MarketplaceRoute: typeof MarketplaceRoute
+  ApiAiSearchRoute: typeof ApiAiSearchRoute
+  ApiAiValueRoute: typeof ApiAiValueRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -201,6 +227,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/api/ai/value': {
+      id: '/api/ai/value'
+      path: '/api/ai/value'
+      fullPath: '/api/ai/value'
+      preLoaderRoute: typeof ApiAiValueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/search': {
+      id: '/api/ai/search'
+      path: '/api/ai/search'
+      fullPath: '/api/ai/search'
+      preLoaderRoute: typeof ApiAiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/listings/new': {
       id: '/_authenticated/listings/new'
       path: '/listings/new'
@@ -252,6 +292,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   MarketplaceRoute: MarketplaceRoute,
+  ApiAiSearchRoute: ApiAiSearchRoute,
+  ApiAiValueRoute: ApiAiValueRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
