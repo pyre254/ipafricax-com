@@ -9,38 +9,196 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
+import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
+import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
+import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
+import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
+import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedKycRoute = AuthenticatedKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ApiAiValueRoute = ApiAiValueRouteImport.update({
+  id: '/api/ai/value',
+  path: '/api/ai/value',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiSearchRoute = ApiAiSearchRouteImport.update({
+  id: '/api/ai/search',
+  path: '/api/ai/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedListingsNewRoute =
+  AuthenticatedListingsNewRouteImport.update({
+    id: '/listings/new',
+    path: '/listings/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedListingsIdRoute = AuthenticatedListingsIdRouteImport.update({
+  id: '/listings/$id',
+  path: '/listings/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedEscrowIdRoute = AuthenticatedEscrowIdRouteImport.update({
+  id: '/escrow/$id',
+  path: '/escrow/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kyc': typeof AuthenticatedKycRoute
+  '/escrow/$id': typeof AuthenticatedEscrowIdRoute
+  '/listings/$id': typeof AuthenticatedListingsIdRoute
+  '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/api/ai/search': typeof ApiAiSearchRoute
+  '/api/ai/value': typeof ApiAiValueRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/kyc': typeof AuthenticatedKycRoute
+  '/escrow/$id': typeof AuthenticatedEscrowIdRoute
+  '/listings/$id': typeof AuthenticatedListingsIdRoute
+  '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/api/ai/search': typeof ApiAiSearchRoute
+  '/api/ai/value': typeof ApiAiValueRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/marketplace': typeof MarketplaceRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/kyc': typeof AuthenticatedKycRoute
+  '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
+  '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
+  '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
+  '/api/ai/search': typeof ApiAiSearchRoute
+  '/api/ai/value': typeof ApiAiValueRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/marketplace'
+    | '/admin'
+    | '/dashboard'
+    | '/kyc'
+    | '/escrow/$id'
+    | '/listings/$id'
+    | '/listings/new'
+    | '/api/ai/search'
+    | '/api/ai/value'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/marketplace'
+    | '/admin'
+    | '/dashboard'
+    | '/kyc'
+    | '/escrow/$id'
+    | '/listings/$id'
+    | '/listings/new'
+    | '/api/ai/search'
+    | '/api/ai/value'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/marketplace'
+    | '/_authenticated/admin'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/kyc'
+    | '/_authenticated/escrow/$id'
+    | '/_authenticated/listings/$id'
+    | '/_authenticated/listings/new'
+    | '/api/ai/search'
+    | '/api/ai/value'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  MarketplaceRoute: typeof MarketplaceRoute
+  ApiAiSearchRoute: typeof ApiAiSearchRoute
+  ApiAiValueRoute: typeof ApiAiValueRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +206,94 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/kyc': {
+      id: '/_authenticated/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof AuthenticatedKycRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/ai/value': {
+      id: '/api/ai/value'
+      path: '/api/ai/value'
+      fullPath: '/api/ai/value'
+      preLoaderRoute: typeof ApiAiValueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/search': {
+      id: '/api/ai/search'
+      path: '/api/ai/search'
+      fullPath: '/api/ai/search'
+      preLoaderRoute: typeof ApiAiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/listings/new': {
+      id: '/_authenticated/listings/new'
+      path: '/listings/new'
+      fullPath: '/listings/new'
+      preLoaderRoute: typeof AuthenticatedListingsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/listings/$id': {
+      id: '/_authenticated/listings/$id'
+      path: '/listings/$id'
+      fullPath: '/listings/$id'
+      preLoaderRoute: typeof AuthenticatedListingsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/escrow/$id': {
+      id: '/_authenticated/escrow/$id'
+      path: '/escrow/$id'
+      fullPath: '/escrow/$id'
+      preLoaderRoute: typeof AuthenticatedEscrowIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedKycRoute: typeof AuthenticatedKycRoute
+  AuthenticatedEscrowIdRoute: typeof AuthenticatedEscrowIdRoute
+  AuthenticatedListingsIdRoute: typeof AuthenticatedListingsIdRoute
+  AuthenticatedListingsNewRoute: typeof AuthenticatedListingsNewRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedKycRoute: AuthenticatedKycRoute,
+  AuthenticatedEscrowIdRoute: AuthenticatedEscrowIdRoute,
+  AuthenticatedListingsIdRoute: AuthenticatedListingsIdRoute,
+  AuthenticatedListingsNewRoute: AuthenticatedListingsNewRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRoute,
+  MarketplaceRoute: MarketplaceRoute,
+  ApiAiSearchRoute: ApiAiSearchRoute,
+  ApiAiValueRoute: ApiAiValueRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

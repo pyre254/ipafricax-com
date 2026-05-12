@@ -1,0 +1,19 @@
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { SiteNav } from "@/components/site-nav";
+
+export const Route = createFileRoute("/_authenticated")({
+  beforeLoad: async ({ location }) => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      throw redirect({ to: "/auth", search: { mode: "signin" } });
+    }
+    return { userId: data.session.user.id };
+  },
+  component: () => (
+    <div className="min-h-screen">
+      <SiteNav />
+      <Outlet />
+    </div>
+  ),
+});
