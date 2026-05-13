@@ -76,6 +76,19 @@ function EscrowDetail() {
     load();
   };
 
+  const refund = async () => {
+    if (!confirm("Refund all remaining escrowed funds to the buyer? This cannot be undone.")) return;
+    const remaining = ms.filter((m) => m.status !== "completed").reduce((s, m) => s + Number(m.amount), 0);
+    const { error } = await supabase.from("escrow_transactions").update({ status: "refunded", released_at: new Date().toISOString() }).eq("id", tx.id);
+    if (error) return toast.error(error.message);
+    await supabase.from("audit_logs").insert({
+      actor_id: user.id, action: "escrow.refunded", entity_type: "escrow_transaction", entity_id: tx.id,
+      metadata: { refunded_amount: remaining, currency: tx.currency },
+    });
+    toast.success(`${tx.currency} ${remaining.toLocaleString()} refunded to buyer.`);
+    load();
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
