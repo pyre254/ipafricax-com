@@ -163,14 +163,14 @@ function AuthPage() {
       <style>{`
         .input {
           width: 100%;
-          background: oklch(0.22 0.025 260);
-          border: 1px solid oklch(0.30 0.025 260);
+          background: #ffffff;
+          border: 1px solid var(--border);
           border-radius: 0.625rem;
           padding: 0.65rem 0.85rem;
           color: var(--color-foreground);
           font-size: 0.875rem;
         }
-        .input:focus { outline: 2px solid oklch(0.82 0.16 82 / 0.5); outline-offset: 1px; }
+        .input:focus { outline: 2px solid var(--primary); outline-offset: 1px; border-color: var(--primary); }
       `}</style>
     </div>
   );

@@ -76,6 +76,19 @@ function EscrowDetail() {
     load();
   };
 
+  const refund = async () => {
+    if (!confirm("Refund all remaining escrowed funds to the buyer? This cannot be undone.")) return;
+    const remaining = ms.filter((m) => m.status !== "completed").reduce((s, m) => s + Number(m.amount), 0);
+    const { error } = await supabase.from("escrow_transactions").update({ status: "refunded", released_at: new Date().toISOString() }).eq("id", tx.id);
+    if (error) return toast.error(error.message);
+    await supabase.from("audit_logs").insert({
+      actor_id: user.id, action: "escrow.refunded", entity_type: "escrow_transaction", entity_id: tx.id,
+      metadata: { refunded_amount: remaining, currency: tx.currency },
+    });
+    toast.success(`${tx.currency} ${remaining.toLocaleString()} refunded to buyer.`);
+    load();
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
@@ -91,13 +104,16 @@ function EscrowDetail() {
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">Status: <span className="capitalize">{tx.status.replace(/_/g, " ")}</span></p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {tx.status === "initiated" && isBuyer && (
-              <button onClick={fund} className="inline-flex items-center gap-2 rounded-full bg-gradient-gold px-4 py-2 text-sm font-semibold text-primary-foreground shadow-gold">
+              <button onClick={fund} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-emerald">
                 <Lock className="h-4 w-4" /> Fund escrow
               </button>
             )}
-            {(isBuyer || isSeller) && tx.status !== "released" && tx.status !== "disputed" && (
+            {isSeller && (tx.status === "disputed" || tx.status === "funded" || tx.status === "milestone_completed") && (
+              <button onClick={refund} className="rounded-full border border-accent/40 bg-accent/10 px-4 py-2 text-sm font-semibold text-accent-foreground">Refund buyer</button>
+            )}
+            {(isBuyer || isSeller) && tx.status !== "released" && tx.status !== "disputed" && tx.status !== "refunded" && (
               <button onClick={dispute} className="rounded-full border border-destructive/40 bg-destructive/10 px-4 py-2 text-sm text-destructive">Open dispute</button>
             )}
           </div>
