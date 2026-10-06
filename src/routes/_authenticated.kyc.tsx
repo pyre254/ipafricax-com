@@ -54,7 +54,7 @@ function KycPage() {
         selfie ? upload(selfie, "selfie") : Promise.resolve(null),
         orgCert ? upload(orgCert, "org") : Promise.resolve(null),
       ]);
-      const { error } = await supabase.from("kyc_submissions").insert({
+      const { data: inserted, error } = await supabase.from("kyc_submissions").insert({
         user_id: user.id,
         full_legal_name: form.fullLegalName,
         id_document_type: form.idType,
@@ -64,15 +64,14 @@ function KycPage() {
         org_registration_number: form.orgRegNumber || null,
         org_certificate_url: orgPath,
         status: "pending",
-      });
+      }).select("*").single();
       if (error) throw error;
+      setExisting(inserted as Submission);
       await supabase.from("profiles").update({ kyc_status: "pending" }).eq("id", user.id);
       await supabase.from("audit_logs").insert({
         actor_id: user.id, action: "kyc.submitted", entity_type: "kyc_submission", entity_id: user.id,
       });
       toast.success("KYC submitted for review.");
-      const { data } = await supabase.from("kyc_submissions").select("*").eq("user_id", user.id).order("submitted_at", { ascending: false }).limit(1).maybeSingle();
-      setExisting(data as Submission | null);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Submission failed");
     } finally {

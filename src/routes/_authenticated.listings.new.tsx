@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/listings/new")({
 });
 
 function NewListing() {
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [aiBusy, setAiBusy] = useState(false);
@@ -37,6 +37,9 @@ function NewListing() {
   const [aiResult, setAiResult] = useState<{ valuation_low?: number; valuation_high?: number; readiness_score?: number; summary?: string } | null>(null);
 
   if (!user) return null;
+  if (authLoading) {
+    return <div className="mx-auto max-w-3xl px-6 py-24 text-center text-muted-foreground">Loading…</div>;
+  }
   if (!hasRole("rights_holder")) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-16 text-center">

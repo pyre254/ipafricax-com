@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteNav } from "@/components/site-nav";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: async ({ location }) => {
+  ssr: false,
+  beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
       throw redirect({ to: "/auth", search: { mode: "signin" } });
