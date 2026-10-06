@@ -43,7 +43,7 @@ export function SiteNav() {
             </>
           ) : (
             <>
-              <Link to="/auth" className="hidden sm:inline-flex text-sm font-medium text-foreground/70 hover:text-navy transition-colors">Sign in</Link>
+              <Link to="/auth" search={{ mode: "signin" }} className="hidden sm:inline-flex text-sm font-medium text-foreground/70 hover:text-navy transition-colors">Sign in</Link>
               <Link
                 to="/auth"
                 search={{ mode: "signup" }}
