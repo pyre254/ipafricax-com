@@ -47,6 +47,94 @@ export type Database = {
         }
         Relationships: []
       }
+      certificate_checks: {
+        Row: {
+          created_at: string
+          extracted: Json
+          file_path: string
+          id: string
+          listing_id: string
+          match_score: number | null
+          mismatches: Json
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string
+          extracted?: Json
+          file_path: string
+          id?: string
+          listing_id: string
+          match_score?: number | null
+          mismatches?: Json
+          owner_id: string
+        }
+        Update: {
+          created_at?: string
+          extracted?: Json
+          file_path?: string
+          id?: string
+          listing_id?: string
+          match_score?: number | null
+          mismatches?: Json
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificate_checks_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ip_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificate_proofs: {
+        Row: {
+          created_at: string
+          created_by: string
+          file_name: string | null
+          id: string
+          listing_id: string
+          ots_calendar: string | null
+          ots_proof: string | null
+          prev_record_hash: string | null
+          record_hash: string
+          sha256: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          file_name?: string | null
+          id?: string
+          listing_id: string
+          ots_calendar?: string | null
+          ots_proof?: string | null
+          prev_record_hash?: string | null
+          record_hash: string
+          sha256: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          file_name?: string | null
+          id?: string
+          listing_id?: string
+          ots_calendar?: string | null
+          ots_proof?: string | null
+          prev_record_hash?: string | null
+          record_hash?: string
+          sha256?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificate_proofs_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ip_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       escrow_milestones: {
         Row: {
           amount: number

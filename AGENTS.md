@@ -1,0 +1,2 @@
+- Certificate AI checks and blockchain proofs run in authenticated server functions (src/lib/certificates.functions.ts) so files are read with the caller's permissions and the AI key stays server-side.
+- Blockchain proofs use a hash-chained ledger table plus keyless OpenTimestamps (Bitcoin) anchoring; no wallet or tokens to manage.

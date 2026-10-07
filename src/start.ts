@@ -17,6 +17,15 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+// Attaches the signed-in user's token to server function calls.
+const attachAuth = createMiddleware({ type: "function" }).client(async ({ next }) => {
+  const { supabase } = await import("@/integrations/supabase/client");
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return next({ headers: token ? { Authorization: `Bearer ${token}` } : {} });
+});
+
 export const startInstance = createStart(() => ({
   requestMiddleware: [errorMiddleware],
+  functionMiddleware: [attachAuth],
 }));
