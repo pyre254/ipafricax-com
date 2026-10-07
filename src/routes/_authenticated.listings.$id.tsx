@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { CertificateCheckPanel, BlockchainProofPanel } from "@/components/certificate-panels";
 import { ShieldCheck, Banknote, ArrowLeft, Building2, MapPin, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/listings/$id")({
@@ -155,6 +156,9 @@ function ListingDetail() {
               )}
             </section>
           )}
+
+          {isOwner && <CertificateCheckPanel listingId={listing.id} ownerId={listing.owner_id} />}
+          <BlockchainProofPanel listingId={listing.id} canAnchor={listing.verification_status === "verified" && (isOwner || isAdmin)} />
 
           {isAdmin && listing.verification_status !== "verified" && (
             <section className="mt-10 rounded-2xl border border-primary/30 bg-primary/10 p-6">
