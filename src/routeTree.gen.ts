@@ -9,22 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MarketplaceRouteImport } from './routes/marketplace'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
-import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
-import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
-import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
-import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
+import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
+import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
+import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
+import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
 
-const MarketplaceRoute = MarketplaceRouteImport.update({
-  id: '/marketplace',
-  path: '/marketplace',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -32,18 +36,14 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const MarketplaceRoute = MarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedKycRoute = AuthenticatedKycRouteImport.update({
-  id: '/kyc',
-  path: '/kyc',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -51,20 +51,20 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedKycRoute = AuthenticatedKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const ApiAiValueRoute = ApiAiValueRouteImport.update({
-  id: '/api/ai/value',
-  path: '/api/ai/value',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedEscrowIdRoute = AuthenticatedEscrowIdRouteImport.update({
+  id: '/escrow/$id',
+  path: '/escrow/$id',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const ApiAiSearchRoute = ApiAiSearchRouteImport.update({
-  id: '/api/ai/search',
-  path: '/api/ai/search',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedListingsIdRoute = AuthenticatedListingsIdRouteImport.update({
+  id: '/listings/$id',
+  path: '/listings/$id',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedListingsNewRoute =
   AuthenticatedListingsNewRouteImport.update({
@@ -72,15 +72,15 @@ const AuthenticatedListingsNewRoute =
     path: '/listings/new',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedListingsIdRoute = AuthenticatedListingsIdRouteImport.update({
-  id: '/listings/$id',
-  path: '/listings/$id',
-  getParentRoute: () => AuthenticatedRoute,
+const ApiAiSearchRoute = ApiAiSearchRouteImport.update({
+  id: '/api/ai/search',
+  path: '/api/ai/search',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedEscrowIdRoute = AuthenticatedEscrowIdRouteImport.update({
-  id: '/escrow/$id',
-  path: '/escrow/$id',
-  getParentRoute: () => AuthenticatedRoute,
+const ApiAiValueRoute = ApiAiValueRouteImport.update({
+  id: '/api/ai/value',
+  path: '/api/ai/value',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -178,18 +178,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/marketplace': {
-      id: '/marketplace'
-      path: '/marketplace'
-      fullPath: '/marketplace'
-      preLoaderRoute: typeof MarketplaceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -199,18 +192,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/kyc': {
-      id: '/_authenticated/kyc'
-      path: '/kyc'
-      fullPath: '/kyc'
-      preLoaderRoute: typeof AuthenticatedKycRouteImport
+    '/marketplace': {
+      id: '/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -220,32 +220,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/_authenticated/kyc': {
+      id: '/_authenticated/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof AuthenticatedKycRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/api/ai/value': {
-      id: '/api/ai/value'
-      path: '/api/ai/value'
-      fullPath: '/api/ai/value'
-      preLoaderRoute: typeof ApiAiValueRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/ai/search': {
-      id: '/api/ai/search'
-      path: '/api/ai/search'
-      fullPath: '/api/ai/search'
-      preLoaderRoute: typeof ApiAiSearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/listings/new': {
-      id: '/_authenticated/listings/new'
-      path: '/listings/new'
-      fullPath: '/listings/new'
-      preLoaderRoute: typeof AuthenticatedListingsNewRouteImport
+    '/_authenticated/escrow/$id': {
+      id: '/_authenticated/escrow/$id'
+      path: '/escrow/$id'
+      fullPath: '/escrow/$id'
+      preLoaderRoute: typeof AuthenticatedEscrowIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/listings/$id': {
@@ -255,12 +241,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedListingsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/escrow/$id': {
-      id: '/_authenticated/escrow/$id'
-      path: '/escrow/$id'
-      fullPath: '/escrow/$id'
-      preLoaderRoute: typeof AuthenticatedEscrowIdRouteImport
+    '/_authenticated/listings/new': {
+      id: '/_authenticated/listings/new'
+      path: '/listings/new'
+      fullPath: '/listings/new'
+      preLoaderRoute: typeof AuthenticatedListingsNewRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/ai/search': {
+      id: '/api/ai/search'
+      path: '/api/ai/search'
+      fullPath: '/api/ai/search'
+      preLoaderRoute: typeof ApiAiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/value': {
+      id: '/api/ai/value'
+      path: '/api/ai/value'
+      fullPath: '/api/ai/value'
+      preLoaderRoute: typeof ApiAiValueRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
