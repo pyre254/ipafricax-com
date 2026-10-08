@@ -15,6 +15,20 @@
       "when": 1791354793027,
       "tag": "0001_certificate_checks_and_proofs",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791425924679,
+      "tag": "0002_cert_review_expiry_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791425943418,
+      "tag": "0003_expiry_reminders_single_window",
+      "breakpoints": true
     }
   ]
 }

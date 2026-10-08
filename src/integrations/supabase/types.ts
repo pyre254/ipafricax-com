@@ -57,6 +57,10 @@ export type Database = {
           match_score: number | null
           mismatches: Json
           owner_id: string
+          review_status: string
+          reviewed_at: string | null
+          reviewer_id: string | null
+          reviewer_notes: string | null
         }
         Insert: {
           created_at?: string
@@ -67,6 +71,10 @@ export type Database = {
           match_score?: number | null
           mismatches?: Json
           owner_id: string
+          review_status?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
         }
         Update: {
           created_at?: string
@@ -77,6 +85,10 @@ export type Database = {
           match_score?: number | null
           mismatches?: Json
           owner_id?: string
+          review_status?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          reviewer_notes?: string | null
         }
         Relationships: [
           {
@@ -244,6 +256,8 @@ export type Database = {
           ai_valuation_high: number | null
           ai_valuation_low: number | null
           asking_price: number | null
+          cert_expiry_date: string | null
+          cert_grant_date: string | null
           cover_image_url: string | null
           created_at: string
           currency: string
@@ -274,6 +288,8 @@ export type Database = {
           ai_valuation_high?: number | null
           ai_valuation_low?: number | null
           asking_price?: number | null
+          cert_expiry_date?: string | null
+          cert_grant_date?: string | null
           cover_image_url?: string | null
           created_at?: string
           currency?: string
@@ -304,6 +320,8 @@ export type Database = {
           ai_valuation_high?: number | null
           ai_valuation_low?: number | null
           asking_price?: number | null
+          cert_expiry_date?: string | null
+          cert_grant_date?: string | null
           cover_image_url?: string | null
           created_at?: string
           currency?: string
@@ -379,6 +397,50 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          kind: string
+          listing_id: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind: string
+          listing_id?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind?: string
+          listing_id?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ip_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -451,6 +513,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      queue_expiry_reminders: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "rights_holder" | "buyer" | "verifier"
