@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { NotificationsPanel } from "@/components/review-panels";
 import { ShieldCheck, Plus, Banknote, FileCheck2, AlertCircle, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -66,6 +67,8 @@ function Dashboard() {
           <ArrowRight className="h-4 w-4" />
         </Link>
       )}
+
+      {user && <NotificationsPanel userId={user.id} />}
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
         <Stat icon={FileCheck2} label="Active listings" value={listings.filter((l) => l.status === "active").length.toString()} />

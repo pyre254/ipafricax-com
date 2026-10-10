@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { CertificateFlagQueue } from "@/components/review-panels";
 import { toast } from "sonner";
 import { ShieldCheck, Clock, FileSearch, ArrowRight } from "lucide-react";
 
@@ -29,7 +30,7 @@ type ListingRow = {
 
 function Admin() {
   const { user } = useAuth();
-  const [tab, setTab] = useState<"kyc" | "listings" | "audit">("kyc");
+  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit">("kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
   const [listings, setListings] = useState<ListingRow[]>([]);
   const [audit, setAudit] = useState<{ id: string; action: string; entity_type: string; entity_id: string | null; created_at: string }[]>([]);
@@ -63,7 +64,7 @@ function Admin() {
       <h1 className="mt-2 font-display text-3xl md:text-4xl font-semibold">Trust & verification queue</h1>
 
       <div className="mt-6 inline-flex rounded-full border border-border p-1 text-sm">
-        {([["kyc", "KYC"], ["listings", "Listings"], ["audit", "Audit log"]] as const).map(([k, l]) => (
+        {([["kyc", "KYC"], ["listings", "Listings"], ["certs", "Certificate flags"], ["audit", "Audit log"]] as const).map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)} className={`px-4 py-1.5 rounded-full ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</button>
         ))}
       </div>
@@ -105,6 +106,8 @@ function Admin() {
           ))}
         </section>
       )}
+
+      {tab === "certs" && <section className="mt-6"><CertificateFlagQueue /></section>}
 
       {tab === "audit" && (
         <section className="mt-6 rounded-2xl border-hairline bg-gradient-card divide-y divide-border/40">

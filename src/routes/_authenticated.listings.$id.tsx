@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { CertificateCheckPanel, BlockchainProofPanel } from "@/components/certificate-panels";
+import { AssetHistoryPanel } from "@/components/review-panels";
 import { ShieldCheck, Banknote, ArrowLeft, Building2, MapPin, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/listings/$id")({
@@ -159,6 +160,7 @@ function ListingDetail() {
 
           {isOwner && <CertificateCheckPanel listingId={listing.id} ownerId={listing.owner_id} />}
           <BlockchainProofPanel listingId={listing.id} canAnchor={listing.verification_status === "verified" && (isOwner || isAdmin)} />
+          {(isOwner || isAdmin) && <AssetHistoryPanel listingId={listing.id} expiry={(listing as { cert_expiry_date?: string | null }).cert_expiry_date} />}
 
           {isAdmin && listing.verification_status !== "verified" && (
             <section className="mt-10 rounded-2xl border border-primary/30 bg-primary/10 p-6">
