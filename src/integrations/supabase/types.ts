@@ -506,6 +506,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decide_kyc: {
+        Args: { p_id: string; p_notes: string; p_status: string }
+        Returns: undefined
+      }
+      decide_listing: {
+        Args: { p_id: string; p_notes: string; p_status: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
