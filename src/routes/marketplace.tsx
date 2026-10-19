@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { Search, Sparkles, ShieldCheck, ArrowRight, Loader2 } from "lucide-react
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/marketplace")({
+  head: () => pageMeta('IP marketplace', 'Discover registered intellectual property across Kenya and Africa.'),
   component: Marketplace,
 });
 

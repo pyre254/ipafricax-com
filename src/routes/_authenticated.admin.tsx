@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ShieldCheck, Clock, FileSearch, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  head: () => pageMeta('Verification console', 'Review identity documents and intellectual property ownership.'),
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/auth", search: { mode: "signin" } });

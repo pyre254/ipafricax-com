@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +11,7 @@ import { AssetHistoryPanel } from "@/components/review-panels";
 import { ShieldCheck, Banknote, ArrowLeft, Building2, MapPin, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/listings/$id")({
+  head: () => pageMeta('IP asset details', 'Review intellectual property details, certificates and ownership.'),
   component: ListingDetail,
 });
 

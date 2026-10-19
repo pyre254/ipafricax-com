@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { ShieldCheck, Upload, FileCheck2, Clock, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/kyc")({
+  head: () => pageMeta('Identity verification', 'Submit identity and organization documents for review.'),
   component: KycPage,
 });
 

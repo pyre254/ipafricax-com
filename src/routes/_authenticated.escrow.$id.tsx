@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { ArrowLeft, ShieldCheck, Banknote, CheckCircle2, Clock, Lock, Unlock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/escrow/$id")({
+  head: () => pageMeta('Escrow transaction', 'Review transaction milestones and asset transfer progress.'),
   component: EscrowDetail,
 });
 
@@ -153,7 +155,7 @@ function EscrowDetail() {
         <div className="rounded-2xl border-hairline bg-gradient-card p-6">
           <div className="flex items-center gap-2 text-sm font-medium"><ShieldCheck className="h-4 w-4 text-accent" /> Trust & safety</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li>• Funds held by IPAfrica until milestones are met</li>
+            <li>• Funds held by IP Africa Exchange until milestones are met</li>
             <li>• Counterparties are KYC-verified</li>
             <li>• Disputes routed to qualified IP arbitrators</li>
             <li>• Every action recorded in audit log</li>

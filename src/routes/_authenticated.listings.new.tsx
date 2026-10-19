@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +12,7 @@ const LICENSE_TYPES = ["exclusive", "non_exclusive", "territorial", "time_based"
 const AUTHORITIES = ["ARIPO", "OAPI", "KIPI (Kenya)", "CIPC (South Africa)", "NIPO (Nigeria)", "USPTO", "EPO", "WIPO", "Other"];
 
 export const Route = createFileRoute("/_authenticated/listings/new")({
+  head: () => pageMeta('List an IP asset', 'Submit patents, trademarks and other IP assets for verification.'),
   component: NewListing,
 });
 

@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { NotificationsPanel } from "@/components/review-panels";
 import { ShieldCheck, Plus, Banknote, FileCheck2, AlertCircle, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => pageMeta('Your portfolio', 'Manage your IP assets, verification and deals.'),
   component: Dashboard,
 });
 

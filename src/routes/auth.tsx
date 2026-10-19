@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
@@ -10,6 +11,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/auth")({
+  head: () => pageMeta('Account access', 'Create an account or sign in to IP Africa Exchange.'),
   validateSearch: (s) => searchSchema.parse(s),
   component: AuthPage,
 });
@@ -53,7 +55,7 @@ function AuthPage() {
           toast.success("Check your inbox to confirm your email, then sign in.");
           return;
         }
-        toast.success("Account created. Welcome to IPAfrica.");
+        toast.success("Account created. Welcome to IP Africa Exchange.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: form.email,
@@ -86,7 +88,7 @@ function AuthPage() {
             Join Africa's IP marketplace. Whether you hold patents, trademarks, copyrights, or you're scouting innovation — sign in to get started.
           </p>
         </div>
-        <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} IPAfrica</p>
+        <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} IP Africa Exchange</p>
       </div>
 
       <div className="flex items-center justify-center p-6 lg:p-12">
@@ -152,7 +154,7 @@ function AuthPage() {
           </form>
 
           <p className="mt-6 text-sm text-muted-foreground text-center">
-            {isSignup ? "Already have an account?" : "New to IPAfrica?"}{" "}
+            {isSignup ? "Already have an account?" : "New to IP Africa Exchange?"}{" "}
             <Link
               to="/auth"
               search={{ mode: isSignup ? "signin" : "signup" }}
