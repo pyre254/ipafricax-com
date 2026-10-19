@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { PrivateDocument } from "@/components/private-document";
+import { Button } from "@/components/ui/button";
 import { CertificateCheckPanel, BlockchainProofPanel } from "@/components/certificate-panels";
 import { AssetHistoryPanel } from "@/components/review-panels";
 import { ShieldCheck, Banknote, ArrowLeft, Building2, MapPin, Sparkles } from "lucide-react";
@@ -18,6 +20,7 @@ type Listing = {
   license_types: string[]; cover_image_url: string | null; verification_status: string;
   status: string; ai_valuation_low: number | null; ai_valuation_high: number | null;
   ai_readiness_score: number | null; ai_summary: string | null;
+  documents: { kind?: string; path?: string; name?: string }[];
 };
 type Owner = { full_name: string; organization: string; org_verified: boolean };
 
@@ -48,17 +51,9 @@ function ListingDetail() {
   const isAdmin = hasRole("admin") || hasRole("verifier");
 
   const verify = async (status: "verified" | "rejected", notes?: string) => {
-    const { error } = await supabase.from("ip_listings").update({
-      verification_status: status,
-      verification_notes: notes ?? null,
-      verified_by: user!.id,
-      verified_at: new Date().toISOString(),
-      status: status === "verified" ? "active" : "withdrawn",
-    }).eq("id", listing.id);
+    if (!user) return;
+    const { error } = await supabase.rpc("decide_listing", { p_id: listing.id, p_status: status, p_notes: notes ?? "Ownership and registration certificate reviewed" });
     if (error) return toast.error(error.message);
-    await supabase.from("audit_logs").insert({
-      actor_id: user!.id, action: `listing.${status}`, entity_type: "ip_listing", entity_id: listing.id, metadata: { notes },
-    });
     toast.success(`Listing ${status}.`);
     const { data } = await supabase.from("ip_listings").select("*").eq("id", id).maybeSingle();
     setListing(data as Listing);
@@ -162,13 +157,14 @@ function ListingDetail() {
           <BlockchainProofPanel listingId={listing.id} canAnchor={listing.verification_status === "verified" && (isOwner || isAdmin)} />
           {(isOwner || isAdmin) && <AssetHistoryPanel listingId={listing.id} expiry={(listing as { cert_expiry_date?: string | null }).cert_expiry_date} />}
 
-          {isAdmin && listing.verification_status !== "verified" && (
+          {isAdmin && !isOwner && ["pending", "unverified"].includes(listing.verification_status) && (
             <section className="mt-10 rounded-2xl border border-primary/30 bg-primary/10 p-6">
               <h2 className="font-semibold">Verifier actions</h2>
               <p className="text-sm text-muted-foreground mt-1">Verify this listing after confirming ownership against the registry.</p>
+              <div className="mt-3 flex flex-wrap gap-3">{(listing.documents ?? []).filter(d => d.kind === "registration_certificate" && d.path).map((d, i) => <PrivateDocument key={i} bucket="ip-documents" path={d.path ?? null} label={d.name ?? "Registration certificate"} />)}</div>
               <div className="mt-4 flex gap-2">
-                <button onClick={() => verify("verified")} className="rounded-full bg-gradient-gold px-4 py-2 text-sm font-semibold text-primary-foreground">Approve & publish</button>
-                <button onClick={() => verify("rejected", "Could not confirm registry record")} className="rounded-full border border-destructive/40 bg-destructive/10 px-4 py-2 text-sm text-destructive">Reject</button>
+                <Button onClick={() => verify("verified")}>Approve & publish</Button>
+                <Button variant="destructive" onClick={() => verify("rejected", "Could not confirm registry record")}>Reject</Button>
               </div>
             </section>
           )}

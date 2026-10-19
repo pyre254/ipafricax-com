@@ -34,7 +34,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (isSignup) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
           options: {
@@ -49,6 +49,10 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        if (!data.session) {
+          toast.success("Check your inbox to confirm your email, then sign in.");
+          return;
+        }
         toast.success("Account created. Welcome to IPAfrica.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({

@@ -35,7 +35,8 @@ function KycPage() {
   }, [user]);
 
   const upload = async (file: File, kind: string) => {
-    const path = `${user!.id}/${kind}-${Date.now()}-${file.name}`;
+    if (!user) throw new Error("Please sign in before uploading.");
+    const path = `${user.id}/${kind}-${Date.now()}-${file.name}`;
     const { error } = await supabase.storage.from("kyc-documents").upload(path, file);
     if (error) throw error;
     return path;
@@ -67,10 +68,6 @@ function KycPage() {
       }).select("*").single();
       if (error) throw error;
       setExisting(inserted as Submission);
-      await supabase.from("profiles").update({ kyc_status: "pending" }).eq("id", user.id);
-      await supabase.from("audit_logs").insert({
-        actor_id: user.id, action: "kyc.submitted", entity_type: "kyc_submission", entity_id: user.id,
-      });
       toast.success("KYC submitted for review.");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Submission failed");
