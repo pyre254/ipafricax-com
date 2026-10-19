@@ -18,6 +18,7 @@ async def main():
         await page.wait_for_url('**/dashboard',timeout=30000)
         print('PASS: registration creates a signed-in rights-holder account')
         await page.get_by_role('button',name='Sign out',exact=True).click()
+        await page.wait_for_url('http://localhost:8080/',timeout=30000)
         await page.goto('http://localhost:8080/auth?mode=signin')
         await page.get_by_label('Email',exact=True).fill(email)
         await page.get_by_label('Password',exact=True).fill(password)
