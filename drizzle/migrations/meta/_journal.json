@@ -36,6 +36,13 @@
       "when": 1792324461391,
       "tag": "0004_secure_verification_workflow",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792382749261,
+      "tag": "0005_allow_atomic_kyc_profile_sync",
+      "breakpoints": true
     }
   ]
 }

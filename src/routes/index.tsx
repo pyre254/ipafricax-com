@@ -10,10 +10,12 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "IPAfrica — Kenya & Africa's IP Commercialization Marketplace" },
+      { title: "IP Africa Exchange — Kenya & Africa's IP Commercialization Marketplace" },
       { name: "description", content: "Buy, sell, license and discover patents, trademarks, designs and copyrights across Kenya and Africa. Verified ownership, escrow payments, AI matchmaking." },
-      { property: "og:title", content: "IPAfrica — Kenya & Africa's IP Marketplace" },
+      { property: "og:title", content: "IP Africa Exchange — Kenya & Africa's IP Marketplace" },
       { property: "og:description", content: "Africa's enterprise marketplace for intellectual property: patents, trademarks, designs, copyrights." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Landing,
@@ -111,7 +113,7 @@ function Landing() {
           <div>
             <h3 className="text-2xl md:text-3xl font-semibold text-navy">From registration certificate to wired royalty — one chain of custody.</h3>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              Every asset on IPAfrica is linked to a verified rights-holder, registered jurisdiction, and a tamper-evident transaction history.
+              Every asset on IP Africa Exchange is linked to a verified rights-holder, registered jurisdiction, and a tamper-evident transaction history.
               Buyers see a verification badge before they ever open a deal room.
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
@@ -165,7 +167,7 @@ function Landing() {
         </div>
       </Section>
 
-      <Section id="who" eyebrow="Built For" title="Who's on IPAfrica">
+      <Section id="who" eyebrow="Built For" title="Who's on IP Africa Exchange">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {orgs.map((o) => (
             <Card key={o.label}>
@@ -323,7 +325,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-md bg-navy text-white text-xs font-bold">IP</div>
-          <span>© {new Date().getFullYear()} IPAfrica · Nairobi, Kenya. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} IP Africa Exchange · Nairobi, Kenya. All rights reserved.</span>
         </div>
         <div className="flex gap-6">
           <a href="#" className="hover:text-navy">Privacy</a>

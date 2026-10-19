@@ -1,3 +1,4 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +7,7 @@ import { toast } from "sonner";
 import { ShieldCheck, Upload, FileCheck2, Clock, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/kyc")({
+  head: () => pageMeta('Identity verification', 'Submit identity and organization documents for review.'),
   component: KycPage,
 });
 
@@ -35,7 +37,8 @@ function KycPage() {
   }, [user]);
 
   const upload = async (file: File, kind: string) => {
-    const path = `${user!.id}/${kind}-${Date.now()}-${file.name}`;
+    if (!user) throw new Error("Please sign in before uploading.");
+    const path = `${user.id}/${kind}-${Date.now()}-${file.name}`;
     const { error } = await supabase.storage.from("kyc-documents").upload(path, file);
     if (error) throw error;
     return path;
@@ -67,10 +70,6 @@ function KycPage() {
       }).select("*").single();
       if (error) throw error;
       setExisting(inserted as Submission);
-      await supabase.from("profiles").update({ kyc_status: "pending" }).eq("id", user.id);
-      await supabase.from("audit_logs").insert({
-        actor_id: user.id, action: "kyc.submitted", entity_type: "kyc_submission", entity_id: user.id,
-      });
       toast.success("KYC submitted for review.");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Submission failed");

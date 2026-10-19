@@ -1,2 +1,5 @@
 - Certificate AI checks and blockchain proofs run in authenticated server functions (src/lib/certificates.functions.ts) so files are read with the caller's permissions and the AI key stays server-side.
 - Blockchain proofs use a hash-chained ledger table plus keyless OpenTimestamps (Bitcoin) anchoring; no wallet or tokens to manage.
+- Identity and listing decisions use authorized transactional database functions and triggers so verification, profile status, notifications, and audit records stay consistent.
+- Private review evidence uses short-lived signed links with the caller's storage permissions.
+- Content pages share app-specific metadata through pageMeta to keep the brand consistent.

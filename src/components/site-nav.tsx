@@ -9,10 +9,10 @@ export function SiteNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-white/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex min-w-0 items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy text-white font-bold tracking-tight">IP</div>
           <div className="leading-tight">
-            <div className="font-display text-lg font-semibold text-navy">IPAfrica</div>
+            <div className="font-display text-base sm:text-lg font-semibold text-navy max-w-44 sm:max-w-none">IP Africa Exchange</div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Kenya · Africa</div>
           </div>
         </Link>
@@ -21,7 +21,7 @@ export function SiteNav() {
           {user && <Link to="/dashboard" className="hover:text-navy transition-colors">Dashboard</Link>}
           {user && hasRole("rights_holder") && <Link to="/listings/new" className="hover:text-navy transition-colors">List IP</Link>}
           {user && <Link to="/kyc" className="hover:text-navy transition-colors">Verification</Link>}
-          {hasRole("admin") && <Link to="/admin" className="hover:text-navy transition-colors">Admin</Link>}
+          {(hasRole("admin") || hasRole("verifier")) && <Link to="/admin" className="hover:text-navy transition-colors">Admin</Link>}
         </nav>
         <div className="flex items-center gap-3">
           {user ? (

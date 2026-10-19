@@ -1,12 +1,16 @@
+import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { CertificateFlagQueue } from "@/components/review-panels";
 import { toast } from "sonner";
+import { PrivateDocument } from "@/components/private-document";
+import { Button } from "@/components/ui/button";
 import { ShieldCheck, Clock, FileSearch, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  head: () => pageMeta('Verification console', 'Review identity documents and intellectual property ownership.'),
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/auth", search: { mode: "signin" } });
@@ -22,6 +26,7 @@ type KycRow = {
   id: string; user_id: string; full_legal_name: string; id_document_type: string;
   id_document_number: string; status: string; submitted_at: string;
   org_registration_number: string | null; reviewer_notes: string | null;
+  id_document_url: string | null; selfie_url: string | null; org_certificate_url: string | null;
 };
 type ListingRow = {
   id: string; title: string; ip_type: string; registration_number: string | null;
@@ -32,6 +37,7 @@ function Admin() {
   const { user } = useAuth();
   const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit">("kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
+  const [busy, setBusy] = useState<string | null>(null);
   const [listings, setListings] = useState<ListingRow[]>([]);
   const [audit, setAudit] = useState<{ id: string; action: string; entity_type: string; entity_id: string | null; created_at: string }[]>([]);
 
@@ -46,14 +52,11 @@ function Admin() {
   useEffect(() => { load(); }, [load]);
 
   const reviewKyc = async (row: KycRow, status: "approved" | "rejected", notes?: string) => {
-    const { error } = await supabase.from("kyc_submissions").update({
-      status, reviewer_id: user!.id, reviewer_notes: notes ?? null, reviewed_at: new Date().toISOString(),
-    }).eq("id", row.id);
+    if (!user || busy) return;
+    setBusy(row.id);
+    const { error } = await supabase.rpc("decide_kyc", { p_id: row.id, p_status: status, p_notes: notes ?? "Identity documents reviewed" });
+    setBusy(null);
     if (error) return toast.error(error.message);
-    await supabase.from("profiles").update({ kyc_status: status, org_verified: status === "approved" }).eq("id", row.user_id);
-    await supabase.from("audit_logs").insert({
-      actor_id: user!.id, action: `kyc.${status}`, entity_type: "kyc_submission", entity_id: row.id, metadata: { user_id: row.user_id, notes },
-    });
     toast.success(`KYC ${status}.`);
     load();
   };
@@ -81,11 +84,16 @@ function Admin() {
                   {row.org_registration_number && <p className="text-xs text-muted-foreground mt-1">Org: {row.org_registration_number}</p>}
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => reviewKyc(row, "approved")} className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-semibold text-primary-foreground">Approve</button>
-                  <button onClick={() => reviewKyc(row, "rejected", "Documents could not be verified")} className="rounded-full border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs text-destructive">Reject</button>
+                  <Button size="sm" disabled={busy !== null || row.user_id === user?.id} onClick={() => reviewKyc(row, "approved")}>Approve</Button>
+                  <Button size="sm" variant="destructive" disabled={busy !== null || row.user_id === user?.id} onClick={() => reviewKyc(row, "rejected", "Documents could not be verified")}>Reject</Button>
                 </div>
               </div>
               <p className="mt-2 text-xs text-muted-foreground">Submitted {new Date(row.submitted_at).toLocaleString()}</p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                <PrivateDocument bucket="kyc-documents" path={row.id_document_url} label="ID document" />
+                <PrivateDocument bucket="kyc-documents" path={row.selfie_url} label="Selfie" />
+                <PrivateDocument bucket="kyc-documents" path={row.org_certificate_url} label="Organization certificate" />
+              </div>
             </div>
           ))}
         </section>
