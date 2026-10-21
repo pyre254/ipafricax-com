@@ -4,6 +4,7 @@ from pathlib import Path
 from playwright.async_api import async_playwright
 
 async def main():
+    Path('/tmp/browser/approval').mkdir(parents=True, exist_ok=True)
     stamp=str(int(time.time()))
     email=f'ip-exchange-check-{stamp}@example.com'
     password=secrets.token_urlsafe(24)
@@ -19,7 +20,7 @@ async def main():
         print('PASS: registration creates a signed-in rights-holder account')
         await page.get_by_role('button',name='Sign out',exact=True).click()
         await page.wait_for_url('http://localhost:8080/',timeout=30000)
-        await page.goto('http://localhost:8080/auth?mode=signin')
+        await page.goto('http://localhost:8080/auth?mode=signin',wait_until='networkidle')
         await page.get_by_label('Email',exact=True).fill(email)
         await page.get_by_label('Password',exact=True).fill(password)
         await page.get_by_role('button',name='Sign in',exact=True).click()
