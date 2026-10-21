@@ -1,10 +1,11 @@
 import { pageMeta } from "@/lib/page-meta";
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().default("signin"),
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
+  const router = useRouter();
   const isSignup = mode === "signup";
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -64,7 +66,8 @@ function AuthPage() {
         if (error) throw error;
         toast.success("Signed in.");
       }
-      navigate({ to: "/dashboard" });
+      await router.invalidate();
+      await navigate({ to: "/dashboard" });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Authentication failed";
       toast.error(msg);
@@ -144,13 +147,13 @@ function AuthPage() {
               <input type="password" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input" />
             </Field>
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
               className="w-full rounded-full bg-gradient-gold py-3 text-sm font-semibold text-primary-foreground shadow-gold disabled:opacity-50"
             >
               {loading ? "Please wait…" : isSignup ? "Create account" : "Sign in"}
-            </button>
+            </Button>
           </form>
 
           <p className="mt-6 text-sm text-muted-foreground text-center">

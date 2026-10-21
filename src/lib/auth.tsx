@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,6 +12,7 @@ type AuthCtx = {
   hasRole: (r: AppRole) => boolean;
   signOut: () => Promise<void>;
   refreshRoles: () => Promise<void>;
+  syncSession: (session: Session | null) => Promise<void>;
 };
 
 const Ctx = createContext<AuthCtx | null>(null);
@@ -21,31 +22,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const sessionVersion = useRef(0);
 
-  const loadRoles = async (uid: string) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setRoles((data ?? []).map((r) => r.role as AppRole));
-  };
-
-  useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        setLoading(true);
-        setTimeout(() => { loadRoles(s.user.id).finally(() => setLoading(false)); }, 0);
-      } else {
-        setRoles([]);
-        setLoading(false);
-      }
-    });
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) loadRoles(s.user.id).finally(() => setLoading(false));
-      else setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
+  const syncSession = useCallback(async (next: Session | null) => {
+    const version = ++sessionVersion.current;
+    setSession(next);
+    setUser(next?.user ?? null);
+    setRoles([]);
+    if (!next?.user) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", next.user.id);
+      if (version === sessionVersion.current) setRoles((data ?? []).map((r) => r.role as AppRole));
+    } finally {
+      if (version === sessionVersion.current) setLoading(false);
+    }
   }, []);
 
   const value: AuthCtx = {
@@ -54,8 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     roles,
     loading,
     hasRole: (r) => roles.includes(r),
-    signOut: async () => { await supabase.auth.signOut(); },
-    refreshRoles: async () => { if (user) await loadRoles(user.id); },
+    signOut: async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    },
+    refreshRoles: async () => { await syncSession(session); },
+    syncSession,
   };
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -3,3 +3,4 @@
 - Identity and listing decisions use authorized transactional database functions and triggers so verification, profile status, notifications, and audit records stay consistent.
 - Private review evidence uses short-lived signed links with the caller's storage permissions.
 - Content pages share app-specific metadata through pageMeta to keep the brand consistent.
+- The root owns the single auth-state subscription; identity changes revalidate routes and role loads ignore stale sessions to prevent access-state races.
