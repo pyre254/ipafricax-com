@@ -1,5 +1,7 @@
 import type { ErrorComponentProps } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Outlet,
   Link,
@@ -108,7 +110,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { AuthProvider } from "@/lib/auth";
+import { AuthProvider, useAuth } from "@/lib/auth";
 import { Toaster } from "sonner";
 
 function RootComponent() {
@@ -116,9 +118,32 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <AuthSessionSync queryClient={queryClient} />
         <Outlet />
         <Toaster theme="light" position="top-right" />
       </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthSessionSync({ queryClient }: { queryClient: QueryClient }) {
+  const router = useRouter();
+  const { syncSession } = useAuth();
+  useEffect(() => {
+    let active = true;
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "USER_UPDATED"].includes(event)) return;
+      // Leave the auth callback before querying roles or revalidating protected routes.
+      queueMicrotask(() => {
+        if (!active) return;
+        void syncSession(session);
+        if (event === "INITIAL_SESSION") return;
+        if (event === "SIGNED_OUT") queryClient.clear();
+        void router.invalidate();
+        if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
+      });
+    });
+    return () => { active = false; data.subscription.unsubscribe(); };
+  }, [queryClient, router, syncSession]);
+  return null;
 }

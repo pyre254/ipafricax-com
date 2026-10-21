@@ -1,10 +1,14 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, LogOut, ShieldCheck, LayoutDashboard, Plus } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export function SiteNav() {
   const { user, signOut, hasRole } = useAuth();
   const navigate = useNavigate();
+  const [signingOut, setSigningOut] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-white/85 backdrop-blur-xl">
@@ -34,12 +38,18 @@ export function SiteNav() {
                   <Plus className="h-4 w-4" /> List IP
                 </Link>
               )}
-              <button
-                onClick={async () => { await signOut(); navigate({ to: "/" }); }}
+              <Button
+                disabled={signingOut}
+                onClick={async () => {
+                  setSigningOut(true);
+                  try { await signOut(); await navigate({ to: "/" }); }
+                  catch (error) { toast.error(error instanceof Error ? error.message : "Could not sign out. Please try again."); }
+                  finally { setSigningOut(false); }
+                }}
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-emerald hover:opacity-95 transition"
               >
                 <LogOut className="h-4 w-4" /> Sign out
-              </button>
+              </Button>
             </>
           ) : (
             <>
