@@ -88,6 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" },
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
     ],
   }),
   shellComponent: RootShell,
@@ -128,22 +129,31 @@ function RootComponent() {
 
 function AuthSessionSync({ queryClient }: { queryClient: QueryClient }) {
   const router = useRouter();
-  const { syncSession } = useAuth();
+  const { syncSession, setRecoveryUserId } = useAuth();
   useEffect(() => {
     let active = true;
+    // Capture recovery details before the auth client consumes and clears the URL hash.
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const recoveryToken = hash.get("type") === "recovery" && !hash.has("error")
+      ? hash.get("access_token") : null;
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "USER_UPDATED"].includes(event)) return;
+      if (!["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "USER_UPDATED", "PASSWORD_RECOVERY"].includes(event)) return;
       // Leave the auth callback before querying roles or revalidating protected routes.
       queueMicrotask(() => {
         if (!active) return;
+        if (event === "PASSWORD_RECOVERY" || (event === "INITIAL_SESSION" && recoveryToken && session?.access_token === recoveryToken)) {
+          setRecoveryUserId(session?.user.id ?? null);
+        } else if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+          setRecoveryUserId(null);
+        }
         void syncSession(session);
-        if (event === "INITIAL_SESSION") return;
+        if (event === "INITIAL_SESSION" || event === "PASSWORD_RECOVERY") return;
         if (event === "SIGNED_OUT") queryClient.clear();
         void router.invalidate();
         if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
       });
     });
     return () => { active = false; data.subscription.unsubscribe(); };
-  }, [queryClient, router, syncSession]);
+  }, [queryClient, router, syncSession, setRecoveryUserId]);
   return null;
 }
