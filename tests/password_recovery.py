@@ -37,8 +37,13 @@ async def main():
             # Capture the request without sending test mail or using the provider's email quota.
             request_payloads = []
             async def intercept_recover(route):
+                cors = {'Access-Control-Allow-Origin': 'http://localhost:8080',
+                        'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS'}
+                if route.request.method == 'OPTIONS':
+                    await route.fulfill(status=204, headers=cors)
+                    return
                 request_payloads.append((route.request.url, json.loads(route.request.post_data)))
-                await route.fulfill(status=200, content_type='application/json', body='{}')
+                await route.fulfill(status=200, headers=cors, content_type='application/json', body='{}')
             await page.route('**/auth/v1/recover*', intercept_recover)
             await page.get_by_label('Email address', exact=True).fill('test-password-recovery@example.com')
             await page.get_by_role('button', name='Send reset link', exact=True).click()
