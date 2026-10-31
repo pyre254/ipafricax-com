@@ -36,11 +36,11 @@ function ResetPasswordPage() {
       const { data: assurance, error: assuranceError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
       if (assuranceError) throw assuranceError;
       let verifiedFactor: string | null = null;
-      if (assurance?.nextLevel === "aal2" && assurance.currentLevel !== "aal2") {
+      if (assurance?.currentLevel !== "aal2") {
         const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
         if (factorsError) throw factorsError;
         verifiedFactor = factors?.totp.find((factor) => factor.status === "verified")?.id ?? null;
-        if (!verifiedFactor) throw new Error("Your account needs another verification method. Please use your usual sign-in method.");
+        if (!verifiedFactor && assurance?.nextLevel === "aal2") throw new Error("Your account needs another verification method. Please use your usual sign-in method.");
       }
       if (!active || finishing.current) return;
       setFactorId(verifiedFactor);
