@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { NotificationsPanel } from "@/components/review-panels";
 import { ShieldCheck, Plus, Banknote, FileCheck2, AlertCircle, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { accountRoles } from "@/lib/account-roles";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => pageMeta('Your portfolio', 'Manage your IP assets, verification and deals.'),
@@ -44,10 +46,12 @@ function Dashboard() {
             Welcome{profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}.
           </h1>
           <p className="mt-1 text-muted-foreground text-sm">
-            {profile?.organization || "Your portfolio"} · Roles: {roles.join(", ") || "buyer"}
+            {profile?.organization || "Your portfolio"} · {accountRoles.filter((r) => roles.includes(r.value)).map((r) => r.label).join(", ") || "Loading access…"}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><Link to="/profile">Your profile</Link></Button>
+          {(hasRole("admin") || hasRole("verifier")) && <Button asChild variant="outline"><Link to="/admin">Review submissions</Link></Button>}
           <Link to="/marketplace" className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-sm hover:bg-card">
             Browse marketplace <ArrowRight className="h-4 w-4" />
           </Link>

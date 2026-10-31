@@ -127,7 +127,7 @@ function AuthPage() {
                   <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="input" />
                 </Field>
                 <Field label="Account type">
-                  <select value={form.isRightsHolder ? "seller" : "buyer"} onChange={(e) => setForm({ ...form, isRightsHolder: e.target.value === "seller" })} className="input">
+                  <select aria-label="Account type" value={form.isRightsHolder ? "seller" : "buyer"} onChange={(e) => setForm({ ...form, isRightsHolder: e.target.value === "seller" })} className="input">
                     <option value="buyer">Buyer</option>
                     <option value="seller">Seller / rights holder</option>
                   </select>
