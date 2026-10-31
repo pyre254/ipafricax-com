@@ -119,7 +119,11 @@ async def main():
                 await account_page.get_by_role('alert').filter(has_text='The passwords do not match.').wait_for()
                 await account_page.get_by_label('Confirm new password', exact=True).fill(new_password)
                 await account_page.get_by_role('button', name='Update password', exact=True).click()
-                await account_page.get_by_role('heading', name='Password updated', exact=True).wait_for(timeout=30000)
+                try:
+                    await account_page.get_by_role('heading', name='Password updated', exact=True).wait_for(timeout=10000)
+                except Exception:
+                    print('Password update message:', await account_page.get_by_role('alert').inner_text())
+                    raise
                 await account_page.screenshot(path=str(out / f'{account_type}-password-updated.png'))
                 await account_page.get_by_role('link', name='Back to sign in', exact=True).click()
                 await account_page.get_by_label('Email', exact=True).fill(email)
