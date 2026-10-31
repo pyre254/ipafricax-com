@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { PrivateDocument } from "@/components/private-document";
 import { Button } from "@/components/ui/button";
 import { AccountManagement } from "@/components/account-management";
+import { AdminMfaGate } from "@/components/admin-mfa-gate";
+import { AdminActivityLog } from "@/components/admin-activity-log";
 import { ShieldCheck, Clock, FileSearch, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -35,8 +37,14 @@ type ListingRow = {
 };
 
 function Admin() {
+  const { hasRole, loading } = useAuth();
+  if (loading) return null;
+  return hasRole("admin") ? <AdminMfaGate><AdminConsole /></AdminMfaGate> : <AdminConsole />;
+}
+
+function AdminConsole() {
   const { user, hasRole } = useAuth();
-  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users">("kyc");
+  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity">("kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [listings, setListings] = useState<ListingRow[]>([]);
@@ -71,9 +79,11 @@ function Admin() {
         {([["kyc", "KYC"], ["listings", "Listings"], ["certs", "Certificate flags"], ["audit", "Audit log"]] as const).map(([k, l]) => (
           <Button key={k} variant={tab === k ? "default" : "outline"} onClick={() => setTab(k)}>{l}</Button>
         ))}
+        {hasRole("admin") && <Button variant={tab === "activity" ? "default" : "outline"} onClick={() => setTab("activity")}>Admin activity</Button>}
         {hasRole("admin") && <Button variant={tab === "users" ? "default" : "outline"} onClick={() => setTab("users")}>Users & roles</Button>}
       </div>
       {tab === "users" && hasRole("admin") && <AccountManagement />}
+      {tab === "activity" && hasRole("admin") && <AdminActivityLog />}
 
       {tab === "kyc" && (
         <section className="mt-6 space-y-3">
