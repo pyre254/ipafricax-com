@@ -4,3 +4,8 @@
 - [x] Run 43 isolated identity/asset/permission checks; fix missing audit and notifications on certificate changes.
 - [x] Verify private identity and certificate links through the administrator screens; deny unrelated buyer and public access.
 - [x] Rerun live signup/sign-in/submission/profile/role tests; verify approval notifications, audit and publication in isolation.
+
+# Password recovery and navigation
+- [ ] Add forgot-password and public reset-password pages for all accounts, preserving administrator MFA.
+- [ ] Create an IP brand favicon and a homepage icon on every content page.
+- [ ] Verify recovery, expired-link handling, favicon, homepage navigation, and existing account tests.
