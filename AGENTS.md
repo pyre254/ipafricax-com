@@ -8,5 +8,5 @@
 - The accounts server functions authorize through the caller's has_role before loading privileged auth account data; profile editing never updates roles or verification fields.
 - Listing review history fires on every actual verification-status transition, including transitions caused by BEFORE triggers on certificate edits, so invalidations cannot lose their audit or notification records.
 - Administrator privileges require a multi-factor (aal2) session: has_role ignores the caller's own admin role otherwise, and the admin console shows an authenticator-app gate, so role changes and private documents stay protected even if a password leaks.
-- Password recovery uses public pages and the root-owned recovery auth event; only a validated recovery session may submit a new password, and recovery never changes roles or authenticator factors.
+- Password recovery uses public pages and the root-owned recovery auth event; only a validated recovery session may submit a new password, existing TOTP factors must be verified before updates, and recovery never changes roles or authenticator factors.
 - Homepage icon links share HomeLink, and the navigation brand mark uses the favicon asset, so all account and content pages keep consistent home access.

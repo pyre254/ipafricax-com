@@ -21,15 +21,32 @@ function ResetPasswordPage() {
   const [confirmation, setConfirmation] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [factorId, setFactorId] = useState<string | null>(null);
+  const [code, setCode] = useState("");
   const finishing = useRef(false);
 
   useEffect(() => {
     if (loading || finishing.current) return;
     if (!passwordRecovery) { setState("invalid"); return; }
     let active = true;
-    void supabase.auth.getUser().then(({ data, error: sessionError }) => {
-      if (active && !finishing.current) setState(!sessionError && data.user ? "ready" : "invalid");
-    }).catch(() => { if (active && !finishing.current) setState("invalid"); });
+    const check = async () => {
+      const { data, error: sessionError } = await supabase.auth.getUser();
+      if (!active || finishing.current) return;
+      if (sessionError || !data.user) { setState("invalid"); return; }
+      const { data: assurance, error: assuranceError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (assuranceError) throw assuranceError;
+      let verifiedFactor: string | null = null;
+      if (assurance?.nextLevel === "aal2" && assurance.currentLevel !== "aal2") {
+        const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+        if (factorsError) throw factorsError;
+        verifiedFactor = factors?.totp.find((factor) => factor.status === "verified")?.id ?? null;
+        if (!verifiedFactor) throw new Error("Your account needs another verification method. Please use your usual sign-in method.");
+      }
+      if (!active || finishing.current) return;
+      setFactorId(verifiedFactor);
+      setState("ready");
+    };
+    void check().catch(() => { if (active && !finishing.current) setState("invalid"); });
     return () => { active = false; };
   }, [loading, passwordRecovery]);
 
@@ -44,6 +61,11 @@ function ResetPasswordPage() {
     try {
       const { data, error: sessionError } = await supabase.auth.getUser();
       if (sessionError || !data.user) { setState("invalid"); return; }
+      if (factorId) {
+        if (!/^\d{6}$/.test(code.trim())) { setError("Enter the 6-digit code from your authenticator app."); return; }
+        const { error: verificationError } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: code.trim() });
+        if (verificationError) { setError("That authenticator code didn't work. Try the latest code."); return; }
+      }
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
       setPassword("");
@@ -91,6 +113,15 @@ function ResetPasswordPage() {
               <Input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirmation}
                 onChange={(event) => setConfirmation(event.target.value)} disabled={busy} className="mt-2 h-11 bg-card" />
             </div>
+            {factorId && (
+              <div>
+                <label htmlFor="recovery-code" className="text-sm font-medium">Authentication code</label>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Your account is protected by an authenticator app. Enter its current 6-digit code.</p>
+                <Input id="recovery-code" inputMode="numeric" autoComplete="one-time-code" required pattern="[0-9]{6}" maxLength={6}
+                  value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, ""))}
+                  disabled={busy} className="mt-2 h-11 bg-card font-mono" />
+              </div>
+            )}
             {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
             <Button type="submit" disabled={busy} className="h-11 w-full">{busy ? "Updating…" : "Update password"}</Button>
           </form>

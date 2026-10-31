@@ -115,15 +115,21 @@ async def main():
                 await account_page.get_by_role('heading', name='Reset your password', exact=True).wait_for()
                 await account_page.get_by_label('New password', exact=True).fill(new_password)
                 await account_page.get_by_label('Confirm new password', exact=True).fill(new_password + 'x')
+                if account_type == 'admin':
+                    await account_page.get_by_label('Authentication code', exact=True).fill('000000')
                 await account_page.get_by_role('button', name='Update password', exact=True).click()
                 await account_page.get_by_role('alert').filter(has_text='The passwords do not match.').wait_for()
                 await account_page.get_by_label('Confirm new password', exact=True).fill(new_password)
+                if account_type == 'admin':
+                    await account_page.get_by_role('button', name='Update password', exact=True).click()
+                    await account_page.get_by_role('alert').filter(has_text="That authenticator code didn't work.").wait_for()
+                    counter = struct.pack('>Q', int(time.time()) // 30)
+                    digest = hmac.new(base64.b32decode(totp_secret + '=' * (-len(totp_secret) % 8)), counter, hashlib.sha1).digest()
+                    offset = digest[-1] & 15
+                    code = str((struct.unpack('>I', digest[offset:offset+4])[0] & 0x7fffffff) % 1000000).zfill(6)
+                    await account_page.get_by_label('Authentication code', exact=True).fill(code)
                 await account_page.get_by_role('button', name='Update password', exact=True).click()
-                try:
-                    await account_page.get_by_role('heading', name='Password updated', exact=True).wait_for(timeout=10000)
-                except Exception:
-                    print('Password update message:', await account_page.get_by_role('alert').inner_text())
-                    raise
+                await account_page.get_by_role('heading', name='Password updated', exact=True).wait_for(timeout=30000)
                 await account_page.screenshot(path=str(out / f'{account_type}-password-updated.png'))
                 await account_page.get_by_role('link', name='Back to sign in', exact=True).click()
                 await account_page.get_by_label('Email', exact=True).fill(email)
