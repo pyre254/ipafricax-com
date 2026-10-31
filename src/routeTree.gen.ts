@@ -16,6 +16,7 @@ import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
 import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
@@ -56,6 +57,11 @@ const AuthenticatedKycRoute = AuthenticatedKycRouteImport.update({
   path: '/kyc',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedEscrowIdRoute = AuthenticatedEscrowIdRouteImport.update({
   id: '/escrow/$id',
   path: '/escrow/$id',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kyc': typeof AuthenticatedKycRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
   '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/kyc'
+    | '/profile'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/kyc'
+    | '/profile'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/kyc'
+    | '/_authenticated/profile'
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
     | '/_authenticated/listings/new'
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKycRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/escrow/$id': {
       id: '/_authenticated/escrow/$id'
       path: '/escrow/$id'
@@ -269,6 +288,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKycRoute: typeof AuthenticatedKycRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedEscrowIdRoute: typeof AuthenticatedEscrowIdRoute
   AuthenticatedListingsIdRoute: typeof AuthenticatedListingsIdRoute
   AuthenticatedListingsNewRoute: typeof AuthenticatedListingsNewRoute
@@ -278,6 +298,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKycRoute: AuthenticatedKycRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedEscrowIdRoute: AuthenticatedEscrowIdRoute,
   AuthenticatedListingsIdRoute: AuthenticatedListingsIdRoute,
   AuthenticatedListingsNewRoute: AuthenticatedListingsNewRoute,

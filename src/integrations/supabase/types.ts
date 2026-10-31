@@ -521,6 +521,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      manage_account_role: {
+        Args: {
+          p_enabled: boolean
+          p_role: Database["public"]["Enums"]["app_role"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       queue_expiry_reminders: { Args: never; Returns: number }
     }
     Enums: {

@@ -126,18 +126,12 @@ function AuthPage() {
                 <Field label="Country">
                   <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="input" />
                 </Field>
-                <label className="flex items-start gap-3 rounded-xl border border-border bg-card/50 p-3 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={form.isRightsHolder}
-                    onChange={(e) => setForm({ ...form, isRightsHolder: e.target.checked })}
-                    className="mt-0.5"
-                  />
-                  <span>
-                    <span className="font-medium">I'm a rights-holder.</span>
-                    <span className="block text-muted-foreground text-xs mt-0.5">I want to list IP for sale or licensing. (Buyers are enabled by default.)</span>
-                  </span>
-                </label>
+                <Field label="Account type">
+                  <select aria-label="Account type" value={form.isRightsHolder ? "seller" : "buyer"} onChange={(e) => setForm({ ...form, isRightsHolder: e.target.value === "seller" })} className="input">
+                    <option value="buyer">Buyer</option>
+                    <option value="seller">Seller / rights holder</option>
+                  </select>
+                </Field>
               </>
             )}
             <Field label="Email">
@@ -172,7 +166,7 @@ function AuthPage() {
       <style>{`
         .input {
           width: 100%;
-          background: #ffffff;
+          background: var(--card);
           border: 1px solid var(--border);
           border-radius: 0.625rem;
           padding: 0.65rem 0.85rem;

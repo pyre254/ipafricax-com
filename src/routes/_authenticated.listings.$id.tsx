@@ -62,7 +62,7 @@ function ListingDetail() {
   };
 
   const initiateEscrow = async () => {
-    if (!user) return;
+    if (!user || !hasRole("buyer")) return;
     if (!offerAmount || Number(offerAmount) <= 0) return toast.error("Enter a valid offer amount.");
     setCreating(true);
     try {
@@ -198,7 +198,7 @@ function ListingDetail() {
               </div>
             </div>
 
-            {!isOwner && user && (
+            {!isOwner && user && hasRole("buyer") && (
               <div className="mt-6 space-y-3 border-t border-border/40 pt-5">
                 <p className="text-xs uppercase tracking-wider text-muted-foreground">Make an offer via escrow</p>
                 <div className="flex gap-1 rounded-full border border-border p-1 text-xs">
@@ -213,14 +213,14 @@ function ListingDetail() {
                   onChange={(e) => setOfferAmount(e.target.value)}
                   className="w-full bg-card border border-border rounded-lg px-3 py-2 text-sm"
                 />
-                <button
+                <Button
                   onClick={initiateEscrow}
                   disabled={creating || listing.status !== "active"}
                   className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-gradient-gold px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-gold disabled:opacity-50"
                 >
                   <Banknote className="h-4 w-4" />
                   {listing.status !== "active" ? "Awaiting verification" : creating ? "Creating…" : "Initiate escrow"}
-                </button>
+                </Button>
               </div>
             )}
           </div>

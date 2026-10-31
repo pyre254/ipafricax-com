@@ -1,5 +1,6 @@
 # Registration and verification checks
-- [ ] Complete live registration, sign-in/sign-out, KYC submission, and asset submission tests.
-- [ ] Complete identity and asset approval/rejection tests using isolated test accounts.
-- [ ] Fix issues uncovered and rerun workflow and authorization regressions.
-- [ ] Verify approval documents, profile status, notifications, audit history, and marketplace publication.
+- [x] Set up the designated existing administrator account and explain secure sign-in.
+- [x] Add buyer/seller account profiles and administrator role management with enforced privileges.
+- [x] Run 43 isolated identity/asset/permission checks; fix missing audit and notifications on certificate changes.
+- [x] Verify private identity and certificate links through the administrator screens; deny unrelated buyer and public access.
+- [x] Rerun live signup/sign-in/submission/profile/role tests; verify approval notifications, audit and publication in isolation.
