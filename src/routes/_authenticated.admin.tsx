@@ -7,6 +7,7 @@ import { CertificateFlagQueue } from "@/components/review-panels";
 import { toast } from "sonner";
 import { PrivateDocument } from "@/components/private-document";
 import { Button } from "@/components/ui/button";
+import { AccountManagement } from "@/components/account-management";
 import { ShieldCheck, Clock, FileSearch, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -34,8 +35,8 @@ type ListingRow = {
 };
 
 function Admin() {
-  const { user } = useAuth();
-  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit">("kyc");
+  const { user, hasRole } = useAuth();
+  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users">("kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [listings, setListings] = useState<ListingRow[]>([]);
@@ -66,11 +67,13 @@ function Admin() {
       <p className="text-xs uppercase tracking-widest text-primary">Verifier console</p>
       <h1 className="mt-2 font-display text-3xl md:text-4xl font-semibold">Trust & verification queue</h1>
 
-      <div className="mt-6 inline-flex rounded-full border border-border p-1 text-sm">
+      <div className="mt-6 flex flex-wrap gap-2 text-sm">
         {([["kyc", "KYC"], ["listings", "Listings"], ["certs", "Certificate flags"], ["audit", "Audit log"]] as const).map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)} className={`px-4 py-1.5 rounded-full ${tab === k ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{l}</button>
+          <Button key={k} variant={tab === k ? "default" : "outline"} onClick={() => setTab(k)}>{l}</Button>
         ))}
+        {hasRole("admin") && <Button variant={tab === "users" ? "default" : "outline"} onClick={() => setTab("users")}>Users & roles</Button>}
       </div>
+      {tab === "users" && hasRole("admin") && <AccountManagement />}
 
       {tab === "kyc" && (
         <section className="mt-6 space-y-3">

@@ -20,9 +20,10 @@ export function SiteNav() {
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Kenya · Africa</div>
           </div>
         </Link>
-        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-foreground/70">
+        <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-foreground/70">
           <Link to="/marketplace" className="hover:text-navy transition-colors">Marketplace</Link>
           {user && <Link to="/dashboard" className="hover:text-navy transition-colors">Dashboard</Link>}
+          {user && <Link to="/profile" className="hover:text-navy transition-colors">Profile</Link>}
           {user && hasRole("rights_holder") && <Link to="/listings/new" className="hover:text-navy transition-colors">List IP</Link>}
           {user && <Link to="/kyc" className="hover:text-navy transition-colors">Verification</Link>}
           {(hasRole("admin") || hasRole("verifier")) && <Link to="/admin" className="hover:text-navy transition-colors">Admin</Link>}
