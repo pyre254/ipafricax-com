@@ -16,6 +16,8 @@ async def main():
     out.mkdir(parents=True, exist_ok=True)
     base = os.environ['SUPABASE_URL'].rstrip('/')
     headers = {'apikey': os.environ['SUPABASE_SERVICE_ROLE_KEY'], 'Content-Type': 'application/json'}
+    if os.environ['SUPABASE_SERVICE_ROLE_KEY'].count('.') == 2:
+        headers['Authorization'] = 'Bearer ' + os.environ['SUPABASE_SERVICE_ROLE_KEY']
     created = []
 
     def admin(path, payload):
