@@ -7,3 +7,4 @@
 - Buyer/seller profiles share editable public profile fields; privileges live only in user_roles and only the administrator-only manage_account_role operation may change them, preserving audit records and administrator access.
 - The accounts server functions authorize through the caller's has_role before loading privileged auth account data; profile editing never updates roles or verification fields.
 - Listing review history fires on every actual verification-status transition, including transitions caused by BEFORE triggers on certificate edits, so invalidations cannot lose their audit or notification records.
+- Administrator privileges require a multi-factor (aal2) session: has_role ignores the caller's own admin role otherwise, and the admin console shows an authenticator-app gate, so role changes and private documents stay protected even if a password leaks.
