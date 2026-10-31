@@ -43,6 +43,13 @@
       "when": 1792382749261,
       "tag": "0005_allow_atomic_kyc_profile_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793439619721,
+      "tag": "0006_account_roles_and_complete_review_history",
+      "breakpoints": true
     }
   ]
 }
