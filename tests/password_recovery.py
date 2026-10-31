@@ -1,8 +1,12 @@
 """Password recovery E2E: disposable accounts only; no credentials or recovery links are logged."""
 import asyncio
+import base64
+import hashlib
+import hmac
 import json
 import os
 import secrets
+import struct
 import time
 from pathlib import Path
 from urllib.parse import urlencode, urlparse
@@ -75,6 +79,25 @@ async def main():
                     grant = requests.post(base + '/rest/v1/user_roles', headers=headers,
                                           json={'user_id': user_id, 'role': 'admin'}, timeout=30)
                     assert grant.ok, 'Cannot grant the disposable test administrator role'
+                    signed_in = requests.post(base + '/auth/v1/token?grant_type=password', headers=headers,
+                                              json={'email': email, 'password': old_password}, timeout=30)
+                    assert signed_in.ok
+                    factor_headers = {**headers, 'Authorization': 'Bearer ' + signed_in.json()['access_token']}
+                    enrolled = requests.post(base + '/auth/v1/factors', headers=factor_headers,
+                                             json={'factor_type': 'totp', 'friendly_name': 'TEST Recovery MFA'}, timeout=30)
+                    assert enrolled.ok
+                    factor = enrolled.json()
+                    totp_secret = factor['totp']['secret']
+                    counter = struct.pack('>Q', int(time.time()) // 30)
+                    digest = hmac.new(base64.b32decode(totp_secret + '=' * (-len(totp_secret) % 8)), counter, hashlib.sha1).digest()
+                    offset = digest[-1] & 15
+                    code = str((struct.unpack('>I', digest[offset:offset+4])[0] & 0x7fffffff) % 1000000).zfill(6)
+                    challenge = requests.post(base + '/auth/v1/factors/' + factor['id'] + '/challenge', headers=factor_headers,
+                                              json={}, timeout=30)
+                    assert challenge.ok
+                    confirmed = requests.post(base + '/auth/v1/factors/' + factor['id'] + '/verify', headers=factor_headers,
+                                              json={'challenge_id': challenge.json()['id'], 'code': code}, timeout=30)
+                    assert confirmed.ok
 
                 generated = admin('generate_link', {'type': 'recovery', 'email': email,
                                                     'options': {'redirectTo': 'http://localhost:8080/reset-password'}})
@@ -117,7 +140,8 @@ async def main():
                     await account_page.goto('http://localhost:8080/admin', wait_until='networkidle')
                     await account_page.get_by_role('heading', name="Confirm it's you", exact=True).wait_for()
                     # Do not screenshot the enrollment QR code or secret.
-                    print('PASS: administrator password reset preserves roles and still requires authenticator setup')
+                    await account_page.get_by_label('Authentication code', exact=True).wait_for()
+                    print('PASS: administrator password reset preserves roles and the existing verified authenticator factor')
                 else:
                     print('PASS: buyer resets password, signs in with it, retains buyer-only privileges, and cannot reuse a plain reset page')
                 await account_context.close()
