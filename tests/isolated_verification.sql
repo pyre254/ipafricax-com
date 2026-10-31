@@ -75,6 +75,8 @@ SELECT pg_temp.assert_true((SELECT count(*)=1 FROM audit_logs WHERE entity_id='3
 SELECT pg_temp.expect_error($q$SELECT decide_listing('30000000-0000-0000-0000-000000000001','verified','duplicate')$q$,'no longer pending','duplicate asset decisions fail');
 SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
 SELECT pg_temp.assert_true((SELECT count(*)=1 FROM ip_listings),'buyer can read approved marketplace assets');
+INSERT INTO escrow_transactions(id,listing_id,buyer_id,seller_id,amount,deal_type) VALUES('40000000-0000-0000-0000-000000000001','30000000-0000-0000-0000-000000000001',auth.uid(),'10000000-0000-0000-0000-000000000001',100,'license');
+SELECT pg_temp.assert_true((SELECT count(*)=1 FROM escrow_transactions WHERE id='40000000-0000-0000-0000-000000000001'),'buyer role permits creating their own deal');
 SELECT pg_temp.assert_true((SELECT count(*)=0 FROM storage.objects WHERE bucket_id IN ('ip-documents','kyc-documents')),'publication does not expose private documents to buyers');
 RESET ROLE;
 SELECT pg_temp.assert_true((SELECT count(*)=1 FROM notifications WHERE listing_id='30000000-0000-0000-0000-000000000001' AND kind='listing_review'),'asset approval notifies rights-holder');
@@ -101,4 +103,7 @@ SELECT manage_account_role('10000000-0000-0000-0000-000000000003','rights_holder
 SELECT pg_temp.assert_true(NOT public.has_role('10000000-0000-0000-0000-000000000003','rights_holder'),'administrator can revoke seller access');
 SELECT pg_temp.assert_true((SELECT count(*)=2 FROM audit_logs WHERE entity_id='10000000-0000-0000-0000-000000000003' AND action IN ('account.role_granted','account.role_removed')),'role grant and removal both record audit history');
 SELECT pg_temp.expect_error($q$SELECT manage_account_role(auth.uid(),'admin',false)$q$,'own administrator access','administrator cannot lock themselves out');
+SELECT manage_account_role('10000000-0000-0000-0000-000000000003','buyer',false);
+SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
+SELECT pg_temp.expect_error($q$INSERT INTO escrow_transactions(listing_id,buyer_id,seller_id,amount,deal_type) VALUES('30000000-0000-0000-0000-000000000001',auth.uid(),'10000000-0000-0000-0000-000000000001',100,'license')$q$,'row-level security','revoked buyer access blocks new deals');
 RESET ROLE;
