@@ -21,6 +21,9 @@ CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$
  SELECT nullif(coalesce(current_setting('request.jwt.claim.sub',true),
  current_setting('request.jwt.claims',true)::jsonb->>'sub'),'')::uuid
 $$;
+CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$
+ SELECT jsonb_build_object('sub',auth.uid()::text,'aal',coalesce(nullif(current_setting('request.jwt.claim.aal',true),''),'aal1'))
+$$;
 GRANT USAGE ON SCHEMA auth TO anon,authenticated,service_role;
 CREATE SCHEMA storage;
 CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean);

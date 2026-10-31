@@ -96,6 +96,10 @@ SELECT pg_temp.assert_true((SELECT count(*)=2 FROM notifications WHERE listing_i
 
 SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000004',false);
+SELECT set_config('request.jwt.claim.aal','aal1',false);
+SELECT pg_temp.assert_true((SELECT count(*)=0 FROM storage.objects),'administrator without multi-factor sign-in cannot read private documents');
+SELECT pg_temp.expect_error($q$SELECT manage_account_role('10000000-0000-0000-0000-000000000003','rights_holder',true)$q$,'Administrator access required','administrator without multi-factor sign-in cannot change roles');
+SELECT set_config('request.jwt.claim.aal','aal2',false);
 SELECT pg_temp.assert_true((SELECT count(*)=3 FROM storage.objects),'administrator can read submitted private documents');
 SELECT manage_account_role('10000000-0000-0000-0000-000000000003','rights_holder',true);
 SELECT pg_temp.assert_true(public.has_role('10000000-0000-0000-0000-000000000003','rights_holder'),'administrator can enable seller access for buyer');
@@ -104,6 +108,10 @@ SELECT pg_temp.assert_true(NOT public.has_role('10000000-0000-0000-0000-00000000
 SELECT pg_temp.assert_true((SELECT count(*)=2 FROM audit_logs WHERE entity_id='10000000-0000-0000-0000-000000000003' AND action IN ('account.role_granted','account.role_removed')),'role grant and removal both record audit history');
 SELECT pg_temp.expect_error($q$SELECT manage_account_role(auth.uid(),'admin',false)$q$,'own administrator access','administrator cannot lock themselves out');
 SELECT manage_account_role('10000000-0000-0000-0000-000000000003','buyer',false);
+SELECT pg_temp.assert_true((SELECT count(*)>=3 FROM audit_logs WHERE action IN ('account.role_granted','account.role_removed') AND actor_id='10000000-0000-0000-0000-000000000004'),'admin activity log records role changes');
+SELECT pg_temp.assert_true((SELECT count(*)>=1 FROM audit_logs WHERE action IN ('kyc.approved','kyc.rejected')),'admin activity log records identity decisions');
+SELECT pg_temp.assert_true((SELECT count(*)>=1 FROM audit_logs WHERE action IN ('listing.verified','listing.rejected')),'admin activity log records certificate approvals');
+SELECT set_config('request.jwt.claim.aal','',false);
 SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
 SELECT pg_temp.expect_error($q$INSERT INTO escrow_transactions(listing_id,buyer_id,seller_id,amount,deal_type) VALUES('30000000-0000-0000-0000-000000000001',auth.uid(),'10000000-0000-0000-0000-000000000001',100,'license')$q$,'row-level security','revoked buyer access blocks new deals');
 RESET ROLE;
