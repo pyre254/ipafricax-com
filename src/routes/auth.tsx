@@ -4,8 +4,9 @@ import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ShieldCheck, ArrowLeft } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HomeLink } from "@/components/home-link";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().default("signin"),
@@ -79,8 +80,8 @@ function AuthPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="hidden lg:flex flex-col justify-between bg-gradient-card p-12 border-r border-border/40">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to home
+        <Link to="/" aria-label="IP Africa Exchange home" className="inline-flex items-center gap-3 text-sm font-semibold text-navy">
+          <img src="/favicon.svg" alt="" className="h-9 w-9" /> IP Africa Exchange
         </Link>
         <div>
           <ShieldCheck className="h-10 w-10 text-accent" />
@@ -96,6 +97,12 @@ function AuthPage() {
 
       <div className="flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <Link to="/" aria-label="IP Africa Exchange home" className="flex items-center gap-2 text-sm font-semibold text-navy lg:invisible">
+              <img src="/favicon.svg" alt="" className="h-8 w-8" /> IP Africa Exchange
+            </Link>
+            <HomeLink />
+          </div>
           <h1 className="font-display text-3xl font-semibold">
             {isSignup ? "Create your account" : "Welcome back"}
           </h1>
@@ -140,6 +147,13 @@ function AuthPage() {
             <Field label="Password">
               <input type="password" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input" />
             </Field>
+            {!isSignup && (
+              <div className="flex justify-end">
+                <Button asChild variant="link" size="sm" className="px-0">
+                  <Link to="/forgot-password">Forgot password?</Link>
+                </Button>
+              </div>
+            )}
 
             <Button
               type="submit"

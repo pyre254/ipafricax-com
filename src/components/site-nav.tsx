@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useState } from "react";
+import { HomeLink } from "@/components/home-link";
 
 export function SiteNav() {
   const { user, signOut, hasRole } = useAuth();
@@ -11,12 +12,12 @@ export function SiteNav() {
   const [signingOut, setSigningOut] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white/85 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex min-w-0 items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy text-white font-bold tracking-tight">IP</div>
+    <header className="sticky top-0 z-50 border-b border-border bg-card/85 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
+        <Link to="/" aria-label="IP Africa Exchange home" className="flex min-w-0 items-center gap-2">
+          <img src="/favicon.svg" alt="" className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
           <div className="leading-tight">
-            <div className="font-display text-base sm:text-lg font-semibold text-navy max-w-44 sm:max-w-none">IP Africa Exchange</div>
+            <div className="font-display text-sm sm:text-lg font-semibold text-navy max-w-32 sm:max-w-none">IP Africa Exchange</div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Kenya · Africa</div>
           </div>
         </Link>
@@ -28,7 +29,8 @@ export function SiteNav() {
           {user && <Link to="/kyc" className="hover:text-navy transition-colors">Verification</Link>}
           {(hasRole("admin") || hasRole("verifier")) && <Link to="/admin" className="hover:text-navy transition-colors">Admin</Link>}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <HomeLink />
           {user ? (
             <>
               <Link to="/dashboard" className="hidden sm:inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-navy">

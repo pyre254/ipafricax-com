@@ -9,6 +9,8 @@ type AuthCtx = {
   session: Session | null;
   roles: AppRole[];
   loading: boolean;
+  passwordRecovery: boolean;
+  setRecoveryUserId: (userId: string | null) => void;
   hasRole: (r: AppRole) => boolean;
   signOut: () => Promise<void>;
   refreshRoles: () => Promise<void>;
@@ -22,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [recoveryUserId, setRecoveryUserId] = useState<string | null>(null);
   const sessionVersion = useRef(0);
 
   const syncSession = useCallback(async (next: Session | null) => {
@@ -47,6 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     roles,
     loading,
+    passwordRecovery: recoveryUserId !== null && recoveryUserId === user?.id,
+    setRecoveryUserId,
     hasRole: (r) => roles.includes(r),
     signOut: async () => {
       const { error } = await supabase.auth.signOut();
