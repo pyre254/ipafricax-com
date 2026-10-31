@@ -1,0 +1,1 @@
+ALTER POLICY "Buyers create escrow" ON public.escrow_transactions TO authenticated WITH CHECK (buyer_id=auth.uid() AND public.has_role(auth.uid(),'buyer'));

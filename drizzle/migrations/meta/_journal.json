@@ -50,6 +50,13 @@
       "when": 1793439619721,
       "tag": "0006_account_roles_and_complete_review_history",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793439946067,
+      "tag": "0007_enforce_buyer_deal_privilege",
+      "breakpoints": true
     }
   ]
 }
