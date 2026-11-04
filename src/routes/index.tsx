@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-ip-africa.jpg";
 import { SiteNav } from "@/components/site-nav";
 import {
-  CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
+  CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
 } from "@/lib/contact";
 import {
   ShieldCheck, Sparkles, ScrollText, Lock, Globe2, Gavel, Banknote,
