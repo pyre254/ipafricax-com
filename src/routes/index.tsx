@@ -2,9 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-ip-africa.jpg";
 import { SiteNav } from "@/components/site-nav";
 import {
+  CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
+} from "@/lib/contact";
+import {
   ShieldCheck, Sparkles, ScrollText, Lock, Globe2, Gavel, Banknote,
   Search, FileSignature, Building2, Microscope, Palette, Tag, BookOpen,
-  ArrowRight, CheckCircle2, TrendingUp, MessagesSquare, Brain, MapPin
+  ArrowRight, CheckCircle2, TrendingUp, MessagesSquare, Brain, MapPin,
+  Mail, Phone
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -309,8 +313,11 @@ function CTA() {
             <Link to="/auth" search={{ mode: "signup" }} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-emerald">
               Create an account <ArrowRight className="h-4 w-4" />
             </Link>
-            <a href="mailto:hello@ipafrica.co" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white">
+            <a href={CONTACT_EMAIL_HREF} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/15 transition">
               <MessagesSquare className="h-4 w-4" /> Talk to sales
+            </a>
+            <a href={CONTACT_PHONE_HREF} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/15 transition">
+              <Phone className="h-4 w-4 text-accent" /> {CONTACT_PHONE_DISPLAY}
             </a>
           </div>
         </div>
@@ -322,16 +329,45 @@ function CTA() {
 function Footer() {
   return (
     <footer className="border-t border-border bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-navy text-white text-xs font-bold">IP</div>
-          <span>© {new Date().getFullYear()} IP Africa Exchange · Nairobi, Kenya. All rights reserved.</span>
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="grid gap-8 md:grid-cols-[1.4fr_1fr] lg:items-start">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy text-white text-xs font-bold">IP</div>
+            <div>
+              <p className="font-display text-base font-semibold text-navy">IP Africa Exchange</p>
+              <p className="mt-1 text-sm text-muted-foreground max-w-md">
+                Kenya &amp; Africa's marketplace for intellectual property — verified ownership,
+                escrow-backed deals and AI matchmaking.
+              </p>
+            </div>
+          </div>
+          <div>
+            <p className="text-xs uppercase tracking-widest text-primary font-semibold">Contact</p>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li>
+                <a href={CONTACT_EMAIL_HREF} className="inline-flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
+                  <Mail className="h-4 w-4 text-primary" /> {CONTACT_EMAIL}
+                </a>
+              </li>
+              <li>
+                <a href={CONTACT_PHONE_HREF} className="inline-flex items-center gap-2 text-foreground/80 hover:text-primary transition-colors">
+                  <Phone className="h-4 w-4 text-primary" /> {CONTACT_PHONE_DISPLAY}
+                </a>
+              </li>
+              <li className="inline-flex items-center gap-2 text-muted-foreground">
+                <MapPin className="h-4 w-4" /> Nairobi, Kenya
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="flex gap-6">
-          <a href="#" className="hover:text-navy">Privacy</a>
-          <a href="#" className="hover:text-navy">Terms</a>
-          <a href="#" className="hover:text-navy">Security</a>
-          <a href="#" className="hover:text-navy">Contact</a>
+        <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted-foreground">
+          <span>© {new Date().getFullYear()} IP Africa Exchange · Nairobi, Kenya. All rights reserved.</span>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-navy">Privacy</a>
+            <a href="#" className="hover:text-navy">Terms</a>
+            <a href="#" className="hover:text-navy">Security</a>
+            <a href={CONTACT_EMAIL_HREF} className="hover:text-navy">Contact</a>
+          </div>
         </div>
       </div>
     </footer>
