@@ -105,14 +105,14 @@ function ResetPasswordPage() {
           <p className="mt-3 text-sm text-muted-foreground">Choose a new password with at least 8 characters.</p>
           <form onSubmit={submit} className="mt-8 space-y-5">
             <div>
-              <label htmlFor="new-password" className="text-sm font-medium">New password</label>
+              <label htmlFor="new-password" className="mb-2 block text-sm font-medium">New password</label>
               <PasswordInput id="new-password" autoComplete="new-password" required minLength={8} value={password}
-                onChange={(event) => setPassword(event.target.value)} disabled={busy} className="mt-2 flex h-11 w-full rounded-md border border-input bg-card px-3 text-sm" />
+                onChange={(event) => setPassword(event.target.value)} disabled={busy} className="flex h-11 w-full rounded-md border border-input bg-card px-3 text-sm" />
             </div>
             <div>
-              <label htmlFor="confirm-password" className="text-sm font-medium">Confirm new password</label>
+              <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium">Confirm new password</label>
               <PasswordInput id="confirm-password" autoComplete="new-password" required minLength={8} value={confirmation}
-                onChange={(event) => setConfirmation(event.target.value)} disabled={busy} className="mt-2 flex h-11 w-full rounded-md border border-input bg-card px-3 text-sm" />
+                onChange={(event) => setConfirmation(event.target.value)} disabled={busy} className="flex h-11 w-full rounded-md border border-input bg-card px-3 text-sm" />
             </div>
             {factorId && (
               <div>
