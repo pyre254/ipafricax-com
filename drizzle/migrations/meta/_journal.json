@@ -64,6 +64,13 @@
       "when": 1793455962012,
       "tag": "0008_require_admin_mfa",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793813406967,
+      "tag": "0009_super_admin_and_contact_submissions",
+      "breakpoints": true
     }
   ]
 }
