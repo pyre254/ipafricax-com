@@ -19,6 +19,16 @@ export function AccountPage({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto w-full max-w-md px-6 py-12 sm:py-20">{children}</main>
+      <footer className="mx-auto w-full max-w-md px-6 pb-10 text-center text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
+          <a href={CONTACT_EMAIL_HREF} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Mail className="h-3.5 w-3.5 text-primary" /> {CONTACT_EMAIL}
+          </a>
+          <a href={CONTACT_PHONE_HREF} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Phone className="h-3.5 w-3.5 text-primary" /> {CONTACT_PHONE_DISPLAY}
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
