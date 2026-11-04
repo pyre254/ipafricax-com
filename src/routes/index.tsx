@@ -313,8 +313,11 @@ function CTA() {
             <Link to="/auth" search={{ mode: "signup" }} className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-emerald">
               Create an account <ArrowRight className="h-4 w-4" />
             </Link>
-            <a href="mailto:hello@ipafrica.co" className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white">
+            <a href={CONTACT_EMAIL_HREF} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/15 transition">
               <MessagesSquare className="h-4 w-4" /> Talk to sales
+            </a>
+            <a href={CONTACT_PHONE_HREF} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/15 transition">
+              <Phone className="h-4 w-4 text-accent" /> {CONTACT_PHONE_DISPLAY}
             </a>
           </div>
         </div>
