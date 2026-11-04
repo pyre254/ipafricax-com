@@ -134,14 +134,15 @@ function AuthSessionSync({ queryClient }: { queryClient: QueryClient }) {
     let active = true;
     // Capture recovery details before the auth client consumes and clears the URL hash.
     const hash = new URLSearchParams(window.location.hash.slice(1));
-    const recoveryToken = hash.get("type") === "recovery" && !hash.has("error")
+    // Invitation links also let the invited person choose their first password.
+    const recoveryToken = ["recovery", "invite"].includes(hash.get("type") ?? "") && !hash.has("error")
       ? hash.get("access_token") : null;
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (!["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "USER_UPDATED", "PASSWORD_RECOVERY"].includes(event)) return;
       // Leave the auth callback before querying roles or revalidating protected routes.
       queueMicrotask(() => {
         if (!active) return;
-        if (event === "PASSWORD_RECOVERY" || (event === "INITIAL_SESSION" && recoveryToken && session?.access_token === recoveryToken)) {
+        if (event === "PASSWORD_RECOVERY" || ((event === "INITIAL_SESSION" || event === "SIGNED_IN") && recoveryToken && session?.access_token === recoveryToken)) {
           setRecoveryUserId(session?.user.id ?? null);
         } else if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
           setRecoveryUserId(null);
