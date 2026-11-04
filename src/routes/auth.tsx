@@ -1,3 +1,4 @@
+import { PasswordInput } from "@/components/password-input";
 import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, useNavigate, useRouter, Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -158,7 +159,7 @@ function AuthPage() {
               <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input" />
             </Field>
             <Field label="Password">
-              <input type="password" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input" />
+              <PasswordInput required minLength={8} autoComplete={isSignup ? "new-password" : "current-password"} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="input" />
             </Field>
             {!isSignup && (
               <div className="flex justify-end">

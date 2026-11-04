@@ -38,3 +38,29 @@ export const changeAccountRole = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { saved: true };
   });
+export const inviteAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({
+    email: z.string().trim().toLowerCase().email().max(255),
+    makeAdmin: z.boolean(),
+    redirectTo: z.string().url(),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: isSuper, error: permissionError } = await context.supabase.rpc("is_super_admin", { _user_id: context.userId });
+    if (permissionError || !isSuper) throw new Error("Only the super administrator can invite accounts");
+    const target = new URL(data.redirectTo);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
+      redirectTo: `${target.origin}/reset-password`,
+    });
+    if (error || !invited.user) throw new Error(error?.message ?? "Could not send the invitation");
+    await context.supabase.from("audit_logs").insert({
+      actor_id: context.userId, action: "account.invited", entity_type: "user_role", entity_id: invited.user.id,
+      metadata: { email: data.email, admin: data.makeAdmin },
+    });
+    if (data.makeAdmin) {
+      const { error: roleError } = await context.supabase.rpc("manage_account_role", { p_user_id: invited.user.id, p_role: "admin", p_enabled: true });
+      if (roleError) throw new Error(`Invitation sent, but administrator access failed: ${roleError.message}`);
+    }
+    return { invited: true };
+  });

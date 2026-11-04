@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { AccountManagement } from "@/components/account-management";
 import { AdminMfaGate } from "@/components/admin-mfa-gate";
 import { AdminActivityLog } from "@/components/admin-activity-log";
+import { ContactInbox } from "@/components/contact-inbox";
 import { ShieldCheck, Clock, FileSearch, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -44,7 +45,7 @@ function Admin() {
 
 function AdminConsole() {
   const { user, hasRole } = useAuth();
-  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity">("kyc");
+  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity" | "contact">("kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [listings, setListings] = useState<ListingRow[]>([]);
@@ -80,9 +81,11 @@ function AdminConsole() {
           <Button key={k} variant={tab === k ? "default" : "outline"} onClick={() => setTab(k)}>{l}</Button>
         ))}
         {hasRole("admin") && <Button variant={tab === "activity" ? "default" : "outline"} onClick={() => setTab("activity")}>Admin activity</Button>}
+        {hasRole("admin") && <Button variant={tab === "contact" ? "default" : "outline"} onClick={() => setTab("contact")}>Contact messages</Button>}
         {hasRole("admin") && <Button variant={tab === "users" ? "default" : "outline"} onClick={() => setTab("users")}>Users & roles</Button>}
       </div>
       {tab === "users" && hasRole("admin") && <AccountManagement />}
+      {tab === "contact" && hasRole("admin") && <ContactInbox />}
       {tab === "activity" && hasRole("admin") && <AdminActivityLog />}
 
       {tab === "kyc" && (

@@ -1,3 +1,4 @@
+import { ContactForm } from "@/components/contact-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-ip-africa.jpg";
 import { SiteNav } from "@/components/site-nav";
@@ -358,6 +359,7 @@ function Footer() {
                 <MapPin className="h-4 w-4" /> Nairobi, Kenya
               </li>
             </ul>
+            <div id="contact" className="mt-5"><ContactForm /></div>
           </div>
         </div>
         <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted-foreground">
