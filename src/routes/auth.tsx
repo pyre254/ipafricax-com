@@ -4,9 +4,12 @@ import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HomeLink } from "@/components/home-link";
+import {
+  CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
+} from "@/lib/contact";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().default("signin"),
@@ -92,7 +95,17 @@ function AuthPage() {
             Join Africa's IP marketplace. Whether you hold patents, trademarks, copyrights, or you're scouting innovation — sign in to get started.
           </p>
         </div>
-        <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} IP Africa Exchange</p>
+        <div className="text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} IP Africa Exchange</p>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1">
+            <a href={CONTACT_EMAIL_HREF} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Mail className="h-3.5 w-3.5 text-primary" /> {CONTACT_EMAIL}
+            </a>
+            <a href={CONTACT_PHONE_HREF} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Phone className="h-3.5 w-3.5 text-primary" /> {CONTACT_PHONE_DISPLAY}
+            </a>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center justify-center p-6 lg:p-12">

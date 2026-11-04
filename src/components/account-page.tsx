@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { Mail, Phone } from "lucide-react";
 import { HomeLink } from "@/components/home-link";
+import {
+  CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
+} from "@/lib/contact";
 
 export function AccountPage({ children }: { children: ReactNode }) {
   return (
