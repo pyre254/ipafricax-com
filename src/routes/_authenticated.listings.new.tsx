@@ -211,7 +211,7 @@ function NewListing() {
             </div>
           </fieldset>
 
-          <FileField label="Cover image (public)" file={cover} onChange={setCover} accept="image/*" />
+          <FileField label="Cover image (optional, public)" file={cover} onChange={setCover} accept="image/*" />
           <FileField label="Registration certificate (private)" file={certificate} onChange={setCertificate} accept="image/*,application/pdf" />
         </div>
 
@@ -246,7 +246,7 @@ function NewListing() {
               <p className="mt-3 text-sm text-muted-foreground">Click AI valuation to estimate value, readiness and generate a marketing summary.</p>
             )}
             <div className="mt-6 flex items-center gap-2 text-xs text-muted-foreground border-t border-border/40 pt-4">
-              <LinkIcon className="h-3 w-3" /> Powered by Lovable AI
+              <LinkIcon className="h-3 w-3" /> Powered by AI
             </div>
           </div>
           <button disabled={loading} className="w-full rounded-full bg-gradient-gold py-3 text-sm font-semibold text-primary-foreground shadow-gold disabled:opacity-50">
