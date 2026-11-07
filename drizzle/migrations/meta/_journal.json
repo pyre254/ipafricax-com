@@ -71,6 +71,13 @@
       "when": 1793813406967,
       "tag": "0009_super_admin_and_contact_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794051397135,
+      "tag": "0010_kipi_verification_centre",
+      "breakpoints": true
     }
   ]
 }
