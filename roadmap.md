@@ -9,3 +9,11 @@
 - [x] Add forgot-password and public reset-password pages for all accounts, preserving administrator MFA.
 - [x] Create an IP brand favicon and a homepage icon on every content page.
 - [x] Verify buyer/admin recovery, existing authenticator checks, expired links, favicon, homepage navigation, and registration tests; inbox delivery remains unverified.
+
+# KIPI IP verification centre
+- [ ] Discover official journal archives from 2008 and document actual coverage.
+- [ ] Add private verification requests, evidence, results, reviews and auditable journal processing.
+- [ ] Build centre, submission, history, results, administrator journal/review screens and listing integration.
+- [ ] Connect asynchronous PDF/OCR processing and implement journal discovery/indexing and certificate comparison.
+- [ ] Add secure PDF reports, notifications, daily synchronization and clear failure/coverage states.
+- [ ] Test verification rules, access controls, official-source processing and browser flows; record external blockers.
