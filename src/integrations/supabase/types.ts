@@ -385,6 +385,626 @@ export type Database = {
         }
         Relationships: []
       }
+      ip_verification_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json
+          id: string
+          verification_request_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          verification_request_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          verification_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_verification_audit_logs_verification_request_id_fkey"
+            columns: ["verification_request_id"]
+            isOneToOne: false
+            referencedRelation: "ip_verification_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_verification_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          extracted_fields: Json | null
+          file_size: number
+          id: string
+          mime_type: string
+          original_filename: string
+          sha256_hash: string
+          storage_path: string
+          uploaded_by: string
+          verification_request_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          extracted_fields?: Json | null
+          file_size: number
+          id?: string
+          mime_type: string
+          original_filename: string
+          sha256_hash: string
+          storage_path: string
+          uploaded_by: string
+          verification_request_id: string
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          extracted_fields?: Json | null
+          file_size?: number
+          id?: string
+          mime_type?: string
+          original_filename?: string
+          sha256_hash?: string
+          storage_path?: string
+          uploaded_by?: string
+          verification_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_verification_documents_verification_request_id_fkey"
+            columns: ["verification_request_id"]
+            isOneToOne: false
+            referencedRelation: "ip_verification_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_verification_evidence: {
+        Row: {
+          created_at: string
+          evidence_hash: string
+          id: string
+          journal_id: string | null
+          page_number: number | null
+          source_title: string
+          source_type: string
+          source_url: string
+          supporting_extract: string
+          verification_result_id: string
+        }
+        Insert: {
+          created_at?: string
+          evidence_hash: string
+          id?: string
+          journal_id?: string | null
+          page_number?: number | null
+          source_title: string
+          source_type: string
+          source_url: string
+          supporting_extract: string
+          verification_result_id: string
+        }
+        Update: {
+          created_at?: string
+          evidence_hash?: string
+          id?: string
+          journal_id?: string | null
+          page_number?: number | null
+          source_title?: string
+          source_type?: string
+          source_url?: string
+          supporting_extract?: string
+          verification_result_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_evidence_journal_id_fkey"
+            columns: ["journal_id"]
+            isOneToOne: false
+            referencedRelation: "kipi_journals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_verification_evidence_verification_result_id_fkey"
+            columns: ["verification_result_id"]
+            isOneToOne: false
+            referencedRelation: "ip_verification_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_verification_requests: {
+        Row: {
+          administrator_decision: string | null
+          administrator_notes: string | null
+          applicant_name: string
+          application_date: string | null
+          certificate_number: string | null
+          claimed_registration_date: string | null
+          completed_at: string | null
+          created_at: string
+          declared_authorized: boolean
+          id: string
+          ip_category: string
+          ip_title: string | null
+          lease_until: string | null
+          listing_id: string | null
+          normalized_registration_number: string
+          official_confirmation_url: string | null
+          processing_error: string | null
+          registration_number: string
+          submission_status: string
+          updated_at: string
+          user_id: string
+          verification_reference: string
+          verification_status: string
+        }
+        Insert: {
+          administrator_decision?: string | null
+          administrator_notes?: string | null
+          applicant_name: string
+          application_date?: string | null
+          certificate_number?: string | null
+          claimed_registration_date?: string | null
+          completed_at?: string | null
+          created_at?: string
+          declared_authorized: boolean
+          id?: string
+          ip_category: string
+          ip_title?: string | null
+          lease_until?: string | null
+          listing_id?: string | null
+          normalized_registration_number: string
+          official_confirmation_url?: string | null
+          processing_error?: string | null
+          registration_number: string
+          submission_status?: string
+          updated_at?: string
+          user_id: string
+          verification_reference?: string
+          verification_status?: string
+        }
+        Update: {
+          administrator_decision?: string | null
+          administrator_notes?: string | null
+          applicant_name?: string
+          application_date?: string | null
+          certificate_number?: string | null
+          claimed_registration_date?: string | null
+          completed_at?: string | null
+          created_at?: string
+          declared_authorized?: boolean
+          id?: string
+          ip_category?: string
+          ip_title?: string | null
+          lease_until?: string | null
+          listing_id?: string | null
+          normalized_registration_number?: string
+          official_confirmation_url?: string | null
+          processing_error?: string | null
+          registration_number?: string
+          submission_status?: string
+          updated_at?: string
+          user_id?: string
+          verification_reference?: string
+          verification_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "ip_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_verification_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_verification_results: {
+        Row: {
+          ai_model: string | null
+          certificate_authenticity: string
+          certificate_consistency: string
+          coverage_snapshot: Json
+          evidence_completeness: number
+          evidence_summary: string
+          field_comparison: Json
+          generated_at: string
+          id: string
+          matched_record_id: string | null
+          record_match: boolean
+          registration_status: string
+          report_path: string | null
+          result_status: string
+          risk_indicators: Json
+          verification_request_id: string
+        }
+        Insert: {
+          ai_model?: string | null
+          certificate_authenticity?: string
+          certificate_consistency?: string
+          coverage_snapshot?: Json
+          evidence_completeness?: number
+          evidence_summary: string
+          field_comparison?: Json
+          generated_at?: string
+          id?: string
+          matched_record_id?: string | null
+          record_match?: boolean
+          registration_status?: string
+          report_path?: string | null
+          result_status: string
+          risk_indicators?: Json
+          verification_request_id: string
+        }
+        Update: {
+          ai_model?: string | null
+          certificate_authenticity?: string
+          certificate_consistency?: string
+          coverage_snapshot?: Json
+          evidence_completeness?: number
+          evidence_summary?: string
+          field_comparison?: Json
+          generated_at?: string
+          id?: string
+          matched_record_id?: string | null
+          record_match?: boolean
+          registration_status?: string
+          report_path?: string | null
+          result_status?: string
+          risk_indicators?: Json
+          verification_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_results_matched_record_id_fkey"
+            columns: ["matched_record_id"]
+            isOneToOne: false
+            referencedRelation: "kipi_ip_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_verification_results_verification_request_id_fkey"
+            columns: ["verification_request_id"]
+            isOneToOne: false
+            referencedRelation: "ip_verification_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_verification_reviews: {
+        Row: {
+          administrator_id: string
+          confirmation_url: string | null
+          id: string
+          new_status: string
+          previous_status: string
+          review_decision: string
+          review_notes: string
+          reviewed_at: string
+          verification_request_id: string
+        }
+        Insert: {
+          administrator_id: string
+          confirmation_url?: string | null
+          id?: string
+          new_status: string
+          previous_status: string
+          review_decision: string
+          review_notes: string
+          reviewed_at?: string
+          verification_request_id: string
+        }
+        Update: {
+          administrator_id?: string
+          confirmation_url?: string | null
+          id?: string
+          new_status?: string
+          previous_status?: string
+          review_decision?: string
+          review_notes?: string
+          reviewed_at?: string
+          verification_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_reviews_administrator_id_fkey"
+            columns: ["administrator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ip_verification_reviews_verification_request_id_fkey"
+            columns: ["verification_request_id"]
+            isOneToOne: false
+            referencedRelation: "ip_verification_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_verification_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_verification_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kipi_ip_records: {
+        Row: {
+          applicant_name: string | null
+          classification_code: string | null
+          created_at: string
+          expiry_date: string | null
+          extracted_text: string
+          extraction_confidence: number
+          filing_date: string | null
+          id: string
+          ip_category: string
+          ip_title: string | null
+          journal_id: string
+          normalized_registration_number: string
+          original_registration_number: string
+          proprietor_name: string | null
+          publication_date: string | null
+          record_hash: string
+          recorded_status: string
+          registration_date: string | null
+          source_page_number: number
+        }
+        Insert: {
+          applicant_name?: string | null
+          classification_code?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          extracted_text: string
+          extraction_confidence?: number
+          filing_date?: string | null
+          id?: string
+          ip_category: string
+          ip_title?: string | null
+          journal_id: string
+          normalized_registration_number: string
+          original_registration_number: string
+          proprietor_name?: string | null
+          publication_date?: string | null
+          record_hash: string
+          recorded_status?: string
+          registration_date?: string | null
+          source_page_number: number
+        }
+        Update: {
+          applicant_name?: string | null
+          classification_code?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          extracted_text?: string
+          extraction_confidence?: number
+          filing_date?: string | null
+          id?: string
+          ip_category?: string
+          ip_title?: string | null
+          journal_id?: string
+          normalized_registration_number?: string
+          original_registration_number?: string
+          proprietor_name?: string | null
+          publication_date?: string | null
+          record_hash?: string
+          recorded_status?: string
+          registration_date?: string | null
+          source_page_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kipi_ip_records_journal_id_fkey"
+            columns: ["journal_id"]
+            isOneToOne: false
+            referencedRelation: "kipi_journals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kipi_journal_pages: {
+        Row: {
+          created_at: string
+          evidence_hash: string
+          extracted_text: string
+          extraction_method: string
+          id: string
+          journal_id: string
+          page_number: number
+          requires_ocr: boolean
+        }
+        Insert: {
+          created_at?: string
+          evidence_hash: string
+          extracted_text: string
+          extraction_method?: string
+          id?: string
+          journal_id: string
+          page_number: number
+          requires_ocr?: boolean
+        }
+        Update: {
+          created_at?: string
+          evidence_hash?: string
+          extracted_text?: string
+          extraction_method?: string
+          id?: string
+          journal_id?: string
+          page_number?: number
+          requires_ocr?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kipi_journal_pages_journal_id_fkey"
+            columns: ["journal_id"]
+            isOneToOne: false
+            referencedRelation: "kipi_journals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kipi_journals: {
+        Row: {
+          archive_format: string
+          archive_member: string | null
+          created_at: string
+          discovery_url: string
+          file_hash: string | null
+          id: string
+          indexed_records_count: number
+          journal_title: string
+          last_synced_at: string
+          lease_until: string | null
+          parent_journal_id: string | null
+          processed_pages: number
+          processing_error: string | null
+          processing_status: string
+          publication_month: number | null
+          publication_year: number
+          source_url: string
+          storage_path: string | null
+          total_pages: number | null
+        }
+        Insert: {
+          archive_format: string
+          archive_member?: string | null
+          created_at?: string
+          discovery_url: string
+          file_hash?: string | null
+          id?: string
+          indexed_records_count?: number
+          journal_title: string
+          last_synced_at?: string
+          lease_until?: string | null
+          parent_journal_id?: string | null
+          processed_pages?: number
+          processing_error?: string | null
+          processing_status?: string
+          publication_month?: number | null
+          publication_year: number
+          source_url: string
+          storage_path?: string | null
+          total_pages?: number | null
+        }
+        Update: {
+          archive_format?: string
+          archive_member?: string | null
+          created_at?: string
+          discovery_url?: string
+          file_hash?: string | null
+          id?: string
+          indexed_records_count?: number
+          journal_title?: string
+          last_synced_at?: string
+          lease_until?: string | null
+          parent_journal_id?: string | null
+          processed_pages?: number
+          processing_error?: string | null
+          processing_status?: string
+          publication_month?: number | null
+          publication_year?: number
+          source_url?: string
+          storage_path?: string | null
+          total_pages?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kipi_journals_parent_journal_id_fkey"
+            columns: ["parent_journal_id"]
+            isOneToOne: false
+            referencedRelation: "kipi_journals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kipi_sync_runs: {
+        Row: {
+          completed_at: string | null
+          coverage_note: string | null
+          discovered_count: number
+          error_message: string | null
+          id: string
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          coverage_note?: string | null
+          discovered_count?: number
+          error_message?: string | null
+          id?: string
+          started_at?: string
+          status: string
+        }
+        Update: {
+          completed_at?: string | null
+          coverage_note?: string | null
+          discovered_count?: number
+          error_message?: string | null
+          id?: string
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       kyc_submissions: {
         Row: {
           full_legal_name: string
@@ -563,6 +1183,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_ip_verification: { Args: { p_id: string }; Returns: boolean }
+      claim_kipi_journal: { Args: { p_id: string }; Returns: boolean }
       decide_kyc: {
         Args: { p_id: string; p_notes: string; p_status: string }
         Returns: undefined
@@ -588,6 +1210,15 @@ export type Database = {
         Returns: undefined
       }
       queue_expiry_reminders: { Args: never; Returns: number }
+      review_ip_verification: {
+        Args: {
+          p_confirmation_url?: string
+          p_decision: string
+          p_id: string
+          p_notes: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "rights_holder" | "buyer" | "verifier"
