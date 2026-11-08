@@ -1,0 +1,23 @@
+import { describe, expect, test } from "bun:test";
+import { compareEvidence, normalizeNumber, officialFileUrl, validateDocument, KIPI_START_YEAR, MAX_CERTIFICATE_BYTES, type RecordRow } from "../src/lib/ip-verification";
+import { parseJournalPage } from "../src/lib/kipi-parser";
+const request = { registration_number: "KE/P/2008/000123", applicant_name: "Example Ltd", ip_title: null, claimed_registration_date: null, ip_category: "patent" };
+const record: RecordRow = { id:"r",journal_id:"j",ip_category:"patent",original_registration_number:request.registration_number,normalized_registration_number:normalizeNumber(request.registration_number),applicant_name:"Example Ltd",proprietor_name:null,ip_title:null,filing_date:null,publication_date:null,registration_date:null,expiry_date:null,classification_code:null,recorded_status:"application_publication",source_page_number:5,extracted_text:"official publication",extraction_confidence:90,record_hash:"hash",created_at:"2026-11-07" };
+describe("KIPI evidence rules",()=>{
+ test("coverage begins in 2008",()=>expect(KIPI_START_YEAR).toBe(2008));
+ test("normalization preserves meaningful prefixes and zeros",()=>expect(normalizeNumber("ke / p / 2008 - 000123")).toBe("KEP2008000123"));
+ test("an exact publication match does not authenticate a certificate",()=>expect(compareEvidence(request,record,20).status).toBe("PARTIALLY_VERIFIED"));
+ test("a different proprietor is a discrepancy",()=>expect(compareEvidence({...request,applicant_name:"Different owner"},record,20).status).toBe("DISCREPANCY_DETECTED"));
+ test("no match in indexed sources is not found",()=>expect(compareEvidence(request,null,20).status).toBe("NOT_FOUND"));
+ test("no indexed evidence requires manual review",()=>expect(compareEvidence(request,null,0).status).toBe("MANUAL_REVIEW_REQUIRED"));
+ test("a published application does not become a grant",()=>expect(compareEvidence({...request,claimed_registration_date:"2008-01-01"},record,20).comparisons.at(-1)?.outcome).toBe("unconfirmed"));
+ test("certificate IP number mismatch is flagged",()=>expect(compareEvidence(request,record,20,{registration_number:"OTHER123"}).status).toBe("DISCREPANCY_DETECTED"));
+ test("poor extraction is routed for review",()=>expect(compareEvidence(request,{...record,extraction_confidence:45},20).status).toBe("MANUAL_REVIEW_REQUIRED"));
+ test("copyright is not verified through KIPI",()=>expect(compareEvidence({...request,ip_category:"copyright"},record,20).risks[0]).toContain("KECOBO"));
+ test("printed expiry is a risk not a fraud conclusion",()=>expect(compareEvidence(request,record,20,{expiry_date:"2008-01-01"},"2026-11-07").risks[0]).toContain("renewal status is unconfirmed"));
+ test("untrusted download hosts are rejected",()=>expect(()=>officialFileUrl("https://evil.example/sites/default/files/a.pdf")).toThrow());
+ test("misleading extensions or MIME do not pass",()=>expect(()=>validateDocument(new TextEncoder().encode("not a PDF"),"application/pdf")).toThrow());
+ test("10MB limit is enforced",()=>expect(()=>validateDocument(new Uint8Array(MAX_CERTIFICATE_BYTES+1),"application/pdf")).toThrow());
+ test("native INID records retain original evidence",()=>{const parsed=parseJournalPage("1.0 Patents\nNational phase of PCT applications\n(21): 2008/000123 (22): 01/01/2008 (54): WATER FILTER\n(71): Example Ltd (85): 01/02/2008");expect(parsed.records[0]?.number).toBe("2008/000123");expect(parsed.records[0]?.applicant).toBe("Example Ltd");expect(parsed.records[0]?.status).toBe("application_publication");});
+ test("scanned or empty pages require OCR",()=>expect(parseJournalPage("").requiresOcr).toBe(true));
+});
