@@ -15,13 +15,17 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
+import { Route as VerificationIndexRouteImport } from './routes/verification.index'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
 import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
+import { Route as AuthenticatedVerificationHistoryRouteImport } from './routes/_authenticated.verification_.history'
+import { Route as AuthenticatedVerificationNewRouteImport } from './routes/_authenticated.verification_.new'
 import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
 import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
 
@@ -54,6 +58,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -74,6 +83,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const VerificationIndexRoute = VerificationIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => VerificationRoute,
+} as any)
 const AuthenticatedEscrowIdRoute = AuthenticatedEscrowIdRouteImport.update({
   id: '/escrow/$id',
   path: '/escrow/$id',
@@ -88,6 +102,18 @@ const AuthenticatedListingsNewRoute =
   AuthenticatedListingsNewRouteImport.update({
     id: '/listings/new',
     path: '/listings/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedVerificationHistoryRoute =
+  AuthenticatedVerificationHistoryRouteImport.update({
+    id: '/verification_/history',
+    path: '/verification/history',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedVerificationNewRoute =
+  AuthenticatedVerificationNewRouteImport.update({
+    id: '/verification_/new',
+    path: '/verification/new',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const ApiAiSearchRoute = ApiAiSearchRouteImport.update({
@@ -107,13 +133,17 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/verification': typeof VerificationRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/verification/': typeof VerificationIndexRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/verification/history': typeof AuthenticatedVerificationHistoryRoute
+  '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
 }
@@ -127,9 +157,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/verification': typeof VerificationIndexRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/verification/history': typeof AuthenticatedVerificationHistoryRoute
+  '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
 }
@@ -141,13 +174,17 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/verification': typeof VerificationRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kyc': typeof AuthenticatedKycRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/verification/': typeof VerificationIndexRoute
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
   '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
+  '/_authenticated/verification_/history': typeof AuthenticatedVerificationHistoryRoute
+  '/_authenticated/verification_/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
 }
@@ -159,13 +196,17 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/marketplace'
     | '/reset-password'
+    | '/verification'
     | '/admin'
     | '/dashboard'
     | '/kyc'
     | '/profile'
+    | '/verification/'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/verification/history'
+    | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
   fileRoutesByTo: FileRoutesByTo
@@ -179,9 +220,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kyc'
     | '/profile'
+    | '/verification'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/verification/history'
+    | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
   id:
@@ -192,13 +236,17 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/marketplace'
     | '/reset-password'
+    | '/verification'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/kyc'
     | '/_authenticated/profile'
+    | '/verification/'
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
     | '/_authenticated/listings/new'
+    | '/_authenticated/verification_/history'
+    | '/_authenticated/verification_/new'
     | '/api/ai/search'
     | '/api/ai/value'
   fileRoutesById: FileRoutesById
@@ -210,6 +258,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   MarketplaceRoute: typeof MarketplaceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  VerificationRoute: typeof VerificationRouteWithChildren
   ApiAiSearchRoute: typeof ApiAiSearchRoute
   ApiAiValueRoute: typeof ApiAiValueRoute
 }
@@ -258,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -286,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/verification/': {
+      id: '/verification/'
+      path: '/'
+      fullPath: '/verification/'
+      preLoaderRoute: typeof VerificationIndexRouteImport
+      parentRoute: typeof VerificationRoute
+    }
     '/_authenticated/escrow/$id': {
       id: '/_authenticated/escrow/$id'
       path: '/escrow/$id'
@@ -305,6 +368,20 @@ declare module '@tanstack/react-router' {
       path: '/listings/new'
       fullPath: '/listings/new'
       preLoaderRoute: typeof AuthenticatedListingsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/verification_/history': {
+      id: '/_authenticated/verification_/history'
+      path: '/verification/history'
+      fullPath: '/verification/history'
+      preLoaderRoute: typeof AuthenticatedVerificationHistoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/verification_/new': {
+      id: '/_authenticated/verification_/new'
+      path: '/verification/new'
+      fullPath: '/verification/new'
+      preLoaderRoute: typeof AuthenticatedVerificationNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/api/ai/search': {
@@ -332,6 +409,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEscrowIdRoute: typeof AuthenticatedEscrowIdRoute
   AuthenticatedListingsIdRoute: typeof AuthenticatedListingsIdRoute
   AuthenticatedListingsNewRoute: typeof AuthenticatedListingsNewRoute
+  AuthenticatedVerificationHistoryRoute: typeof AuthenticatedVerificationHistoryRoute
+  AuthenticatedVerificationNewRoute: typeof AuthenticatedVerificationNewRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -342,10 +421,24 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedEscrowIdRoute: AuthenticatedEscrowIdRoute,
   AuthenticatedListingsIdRoute: AuthenticatedListingsIdRoute,
   AuthenticatedListingsNewRoute: AuthenticatedListingsNewRoute,
+  AuthenticatedVerificationHistoryRoute: AuthenticatedVerificationHistoryRoute,
+  AuthenticatedVerificationNewRoute: AuthenticatedVerificationNewRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
+)
+
+interface VerificationRouteChildren {
+  VerificationIndexRoute: typeof VerificationIndexRoute
+}
+
+const VerificationRouteChildren: VerificationRouteChildren = {
+  VerificationIndexRoute: VerificationIndexRoute,
+}
+
+const VerificationRouteWithChildren = VerificationRoute._addFileChildren(
+  VerificationRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -355,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   MarketplaceRoute: MarketplaceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  VerificationRoute: VerificationRouteWithChildren,
   ApiAiSearchRoute: ApiAiSearchRoute,
   ApiAiValueRoute: ApiAiValueRoute,
 }
