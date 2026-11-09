@@ -86,8 +86,8 @@ export const processKipiJournal=createServerFn({method:"POST"}).middleware([requ
     const path=journal.storage_path||`journals/${journal.id}/${hash}.pdf`;
     if(!journal.storage_path){const {error}=await supabaseAdmin.storage.from("ip-verification-private").upload(path,bytes,{contentType:"application/pdf",upsert:false});if(error)throw error;}
     const {getDocumentProxy}=await import("unpdf");const {parseJournalPage}=await import("./kipi-parser");const {normalizeNumber}=await import("./ip-verification");
-    const pdf=await getDocumentProxy(bytes,{maxImageSize:16000000,isEvalSupported:false});
-    if(pdf.numPages>500){await pdf.destroy();throw new Error("Journal exceeds the safe 500-page limit. Upload a smaller individual issue.");}
+    const pdf=await getDocumentProxy(bytes,{maxImageSize:16000000});
+    if(pdf.numPages>500){await pdf.loadingTask.destroy();throw new Error("Journal exceeds the safe 500-page limit. Upload a smaller individual issue.");}
     const start=journal.processed_pages+1,end=Math.min(start+9,pdf.numPages);let category:"patent"|"utility_model"|"industrial_design"|"trademark"="patent";
     if(start>1){const {data:prev}=await supabaseAdmin.from("kipi_ip_records").select("ip_category").eq("journal_id",journal.id).order("source_page_number",{ascending:false}).limit(1).maybeSingle();if(prev&&["patent","utility_model","industrial_design","trademark"].includes(prev.ip_category))category=prev.ip_category as typeof category;}
     let indexed=0,scanned=0;
@@ -100,7 +100,7 @@ export const processKipiJournal=createServerFn({method:"POST"}).middleware([requ
         const recordHash=[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(`${journal.id}|${pageNumber}|${record.number}|${record.text}`)))].map(b=>b.toString(16).padStart(2,"0")).join("");
         const {error}=await supabaseAdmin.from("kipi_ip_records").upsert({journal_id:journal.id,ip_category:record.category,original_registration_number:record.number,normalized_registration_number:normalizeNumber(record.number),applicant_name:record.applicant,ip_title:record.title,recorded_status:record.status,source_page_number:pageNumber,extracted_text:record.text,extraction_confidence:record.confidence,record_hash:recordHash},{onConflict:"record_hash"});if(error)throw error;indexed++;
       }
-    }}finally{await pdf.destroy();}
+    }}finally{await pdf.loadingTask.destroy();}
     const {count}=await supabaseAdmin.from("kipi_ip_records").select("id",{count:"exact",head:true}).eq("journal_id",journal.id);
     const {count:ocrCount}=await supabaseAdmin.from("kipi_journal_pages").select("id",{count:"exact",head:true}).eq("journal_id",journal.id).eq("requires_ocr",true);
     await supabaseAdmin.from("kipi_journals").update({storage_path:path,file_hash:hash,total_pages:pdf.numPages,processed_pages:end,indexed_records_count:count??0,processing_status:end>=pdf.numPages?(ocrCount?"indexed_with_gaps":"indexed"):"partially_indexed",processing_error:ocrCount?`${ocrCount} pages require OCR or manual review.`:null,lease_until:null}).eq("id",journal.id);
