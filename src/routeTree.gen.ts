@@ -21,9 +21,11 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as VerificationIndexRouteImport } from './routes/verification.index'
+import { Route as AuthenticatedAdminIpVerificationRouteImport } from './routes/_authenticated.admin_.ip-verification'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
 import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
+import { Route as AuthenticatedVerificationIdRouteImport } from './routes/_authenticated.verification_.$id'
 import { Route as AuthenticatedVerificationHistoryRouteImport } from './routes/_authenticated.verification_.history'
 import { Route as AuthenticatedVerificationNewRouteImport } from './routes/_authenticated.verification_.new'
 import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
@@ -88,6 +90,12 @@ const VerificationIndexRoute = VerificationIndexRouteImport.update({
   path: '/',
   getParentRoute: () => VerificationRoute,
 } as any)
+const AuthenticatedAdminIpVerificationRoute =
+  AuthenticatedAdminIpVerificationRouteImport.update({
+    id: '/admin_/ip-verification',
+    path: '/admin/ip-verification',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedEscrowIdRoute = AuthenticatedEscrowIdRouteImport.update({
   id: '/escrow/$id',
   path: '/escrow/$id',
@@ -102,6 +110,12 @@ const AuthenticatedListingsNewRoute =
   AuthenticatedListingsNewRouteImport.update({
     id: '/listings/new',
     path: '/listings/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedVerificationIdRoute =
+  AuthenticatedVerificationIdRouteImport.update({
+    id: '/verification_/$id',
+    path: '/verification/$id',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedVerificationHistoryRoute =
@@ -139,9 +153,11 @@ export interface FileRoutesByFullPath {
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/verification/': typeof VerificationIndexRoute
+  '/admin/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/verification/$id': typeof AuthenticatedVerificationIdRoute
   '/verification/history': typeof AuthenticatedVerificationHistoryRoute
   '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
@@ -158,9 +174,11 @@ export interface FileRoutesByTo {
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/verification': typeof VerificationIndexRoute
+  '/admin/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/verification/$id': typeof AuthenticatedVerificationIdRoute
   '/verification/history': typeof AuthenticatedVerificationHistoryRoute
   '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
@@ -180,9 +198,11 @@ export interface FileRoutesById {
   '/_authenticated/kyc': typeof AuthenticatedKycRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/verification/': typeof VerificationIndexRoute
+  '/_authenticated/admin_/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
   '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
+  '/_authenticated/verification_/$id': typeof AuthenticatedVerificationIdRoute
   '/_authenticated/verification_/history': typeof AuthenticatedVerificationHistoryRoute
   '/_authenticated/verification_/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
@@ -202,9 +222,11 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/profile'
     | '/verification/'
+    | '/admin/ip-verification'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/verification/$id'
     | '/verification/history'
     | '/verification/new'
     | '/api/ai/search'
@@ -221,9 +243,11 @@ export interface FileRouteTypes {
     | '/kyc'
     | '/profile'
     | '/verification'
+    | '/admin/ip-verification'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/verification/$id'
     | '/verification/history'
     | '/verification/new'
     | '/api/ai/search'
@@ -242,9 +266,11 @@ export interface FileRouteTypes {
     | '/_authenticated/kyc'
     | '/_authenticated/profile'
     | '/verification/'
+    | '/_authenticated/admin_/ip-verification'
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
     | '/_authenticated/listings/new'
+    | '/_authenticated/verification_/$id'
     | '/_authenticated/verification_/history'
     | '/_authenticated/verification_/new'
     | '/api/ai/search'
@@ -349,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationIndexRouteImport
       parentRoute: typeof VerificationRoute
     }
+    '/_authenticated/admin_/ip-verification': {
+      id: '/_authenticated/admin_/ip-verification'
+      path: '/admin/ip-verification'
+      fullPath: '/admin/ip-verification'
+      preLoaderRoute: typeof AuthenticatedAdminIpVerificationRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/escrow/$id': {
       id: '/_authenticated/escrow/$id'
       path: '/escrow/$id'
@@ -368,6 +401,13 @@ declare module '@tanstack/react-router' {
       path: '/listings/new'
       fullPath: '/listings/new'
       preLoaderRoute: typeof AuthenticatedListingsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/verification_/$id': {
+      id: '/_authenticated/verification_/$id'
+      path: '/verification/$id'
+      fullPath: '/verification/$id'
+      preLoaderRoute: typeof AuthenticatedVerificationIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/verification_/history': {
@@ -406,9 +446,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedKycRoute: typeof AuthenticatedKycRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedAdminIpVerificationRoute: typeof AuthenticatedAdminIpVerificationRoute
   AuthenticatedEscrowIdRoute: typeof AuthenticatedEscrowIdRoute
   AuthenticatedListingsIdRoute: typeof AuthenticatedListingsIdRoute
   AuthenticatedListingsNewRoute: typeof AuthenticatedListingsNewRoute
+  AuthenticatedVerificationIdRoute: typeof AuthenticatedVerificationIdRoute
   AuthenticatedVerificationHistoryRoute: typeof AuthenticatedVerificationHistoryRoute
   AuthenticatedVerificationNewRoute: typeof AuthenticatedVerificationNewRoute
 }
@@ -418,9 +460,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedKycRoute: AuthenticatedKycRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedAdminIpVerificationRoute: AuthenticatedAdminIpVerificationRoute,
   AuthenticatedEscrowIdRoute: AuthenticatedEscrowIdRoute,
   AuthenticatedListingsIdRoute: AuthenticatedListingsIdRoute,
   AuthenticatedListingsNewRoute: AuthenticatedListingsNewRoute,
+  AuthenticatedVerificationIdRoute: AuthenticatedVerificationIdRoute,
   AuthenticatedVerificationHistoryRoute: AuthenticatedVerificationHistoryRoute,
   AuthenticatedVerificationNewRoute: AuthenticatedVerificationNewRoute,
 }
