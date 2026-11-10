@@ -5,7 +5,8 @@ INSERT INTO public.kipi_ip_records(id,journal_id,ip_category,original_registrati
 SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',false);SELECT set_config('request.jwt.claim.aal','aal1',false);
 INSERT INTO public.ip_verification_requests(id,user_id,ip_category,registration_number,normalized_registration_number,applicant_name,declared_authorized) VALUES('60000000-0000-0000-0000-000000000003',auth.uid(),'patent','TEST2008','TEST2008','TEST Rights Holder',true);
 SELECT pg_temp.expect_error($q$INSERT INTO ip_verification_requests(user_id,ip_category,registration_number,normalized_registration_number,applicant_name,declared_authorized,verification_status) VALUES(auth.uid(),'patent','T','T','Me',true,'VERIFIED')$q$,'row-level security','owner cannot submit a preapproved verification');
-SELECT pg_temp.expect_error($q$UPDATE ip_verification_requests SET verification_status='VERIFIED'$q$,'permission denied','owner cannot edit verification decisions');
+UPDATE ip_verification_requests SET verification_status='VERIFIED';
+SELECT pg_temp.assert_true((SELECT verification_status='MANUAL_REVIEW_REQUIRED' FROM ip_verification_requests WHERE id='60000000-0000-0000-0000-000000000003'),'owner cannot edit verification decisions');
 RESET ROLE;
 INSERT INTO public.ip_verification_documents(verification_request_id,document_type,storage_path,original_filename,mime_type,file_size,sha256_hash,uploaded_by) VALUES('60000000-0000-0000-0000-000000000003','certificate','10000000-0000-0000-0000-000000000001/requests/test','fixture.pdf','application/pdf',20,'synthetic','10000000-0000-0000-0000-000000000001');
 INSERT INTO storage.objects(bucket_id,name) VALUES('ip-verification-private','10000000-0000-0000-0000-000000000001/requests/test');

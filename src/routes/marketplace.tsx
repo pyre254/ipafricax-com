@@ -1,13 +1,16 @@
 import { pageMeta } from "@/lib/page-meta";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { publicMarketplace } from "@/lib/marketplace.functions";
+import { queryOptions,useSuspenseQuery } from "@tanstack/react-query";
 import { SiteNav } from "@/components/site-nav";
 import { Search, Sparkles, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+const marketplaceOptions=queryOptions({queryKey:["public-marketplace"],queryFn:()=>publicMarketplace()});
 export const Route = createFileRoute("/marketplace")({
   head: () => pageMeta('IP marketplace', 'Discover registered intellectual property across Kenya and Africa.'),
+  loader:({context})=>context.queryClient.ensureQueryData(marketplaceOptions),
   component: Marketplace,
 });
 
@@ -21,17 +24,12 @@ type Listing = {
 const TYPES = ["all", "patent", "trademark", "industrial_design", "copyright", "utility_model", "trade_secret"];
 
 function Marketplace() {
-  const [all, setAll] = useState<Listing[]>([]);
+  const {data:all}=useSuspenseQuery(marketplaceOptions);
   const [filtered, setFiltered] = useState<Listing[]>([]);
   const [type, setType] = useState("all");
   const [query, setQuery] = useState("");
   const [aiSearching, setAiSearching] = useState(false);
   const [aiResult, setAiResult] = useState<{ id: string; reasoning: string }[] | null>(null);
-
-  useEffect(() => {
-    supabase.from("ip_listings").select("*").eq("status", "active").order("created_at", { ascending: false })
-      .then(({ data }) => { setAll((data ?? []) as Listing[]); setFiltered((data ?? []) as Listing[]); });
-  }, []);
 
   useEffect(() => {
     setFiltered(type === "all" ? all : all.filter((l) => l.ip_type === type));
