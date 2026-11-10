@@ -75,6 +75,7 @@ function AdminConsole() {
     <div className="mx-auto max-w-7xl px-6 py-12">
       <p className="text-xs uppercase tracking-widest text-primary">Verifier console</p>
       <h1 className="mt-2 font-display text-3xl md:text-4xl font-semibold">Trust & verification queue</h1>
+      {hasRole("admin") && <Button asChild variant="outline" className="mt-5"><Link to="/admin/ip-verification"><FileSearch/>KIPI verification centre</Link></Button>}
 
       <div className="mt-6 flex flex-wrap gap-2 text-sm">
         {([["kyc", "KYC"], ["listings", "Listings"], ["certs", "Certificate flags"], ["audit", "Audit log"]] as const).map(([k, l]) => (

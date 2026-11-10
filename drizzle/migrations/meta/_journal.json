@@ -78,6 +78,13 @@
       "when": 1794051397135,
       "tag": "0010_kipi_verification_centre",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794280707755,
+      "tag": "0011_listing_visibility_subscriptions_and_review_integrity",
+      "breakpoints": true
     }
   ]
 }
