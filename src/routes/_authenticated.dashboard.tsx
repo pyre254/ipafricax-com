@@ -8,7 +8,8 @@ import { ShieldCheck, Plus, Banknote, FileCheck2, AlertCircle, ArrowRight } from
 import { Button } from "@/components/ui/button";
 import { accountRoles } from "@/lib/account-roles";
 import { Suspense } from "react";
-import { SubscriptionPortfolio } from "@/components/subscription-portfolio";
+import { useQueryClient } from "@tanstack/react-query";
+import { portfolioOptions, SubscriptionPortfolio } from "@/components/subscription-portfolio";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => pageMeta('Your portfolio', 'Manage your IP assets, verification and deals.'),
@@ -21,6 +22,8 @@ type Escrow = { id: string; amount: number; currency: string; status: string; de
 
 function Dashboard() {
   const { user, roles, hasRole } = useAuth();
+  const queryClient=useQueryClient();
+  const visibility=queryClient.getQueryData(portfolioOptions(false).queryKey);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [escrows, setEscrows] = useState<Escrow[]>([]);
@@ -80,7 +83,7 @@ function Dashboard() {
       <section className="mt-10"><Suspense fallback={<p className="text-sm text-muted-foreground">Loading listing visibility…</p>}><SubscriptionPortfolio /></Suspense></section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
-        <Stat icon={FileCheck2} label="Active listings" value={listings.filter((l) => l.status === "active").length.toString()} />
+        <Stat icon={FileCheck2} label="Active listings" value={(visibility?.totals.active??0).toString()} />
         <Stat icon={ShieldCheck} label="Verified IP" value={listings.filter((l) => l.verification_status === "verified").length.toString()} />
         <Stat icon={Banknote} label="Escrow deals" value={escrows.length.toString()} />
       </div>

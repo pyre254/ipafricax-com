@@ -10,7 +10,7 @@
 - Administrator privileges require a multi-factor (aal2) session: has_role ignores the caller's own admin role otherwise, and the admin console shows an authenticator-app gate, so role changes and private documents stay protected even if a password leaks.
 - Password recovery uses public pages and the root-owned recovery auth event; only a validated recovery session may submit a new password, existing TOTP factors must be verified before updates, and recovery never changes roles or authenticator factors.
 - Homepage icon links share HomeLink, and the navigation brand mark uses the favicon asset, so all account and content pages keep consistent home access.
-- Primary discovery links remain visible at every screen size while private tools use the account menu; sign-in continuations use a closed destination allowlist to avoid lost workflows and external redirects.
+- Marketplace and services discovery remain visible at every screen size while verification tools live under Admin; sign-in continuations use a closed destination allowlist to avoid external redirects.
 - KIPI journal evidence and private certificate checks are separate from marketplace approval; bounded server processing preserves source passages and uncertain publication status rather than inferring legal ownership.
 - Listing visibility is enforced by database read policies against per-listing expiry timestamps; approval and verified payments create periods transactionally, while owner read paths retain suspended listings.
 - Daraja STK uses explicitly authorized direct server credentials; unsigned callbacks only trigger independent STK status queries, and locked payment application prevents duplicate periods and excludes test payments from live visibility.
@@ -18,3 +18,7 @@
 - Renewal prompts require a short-lived single-use owner/listing/phone/environment confirmation after Daraja preflight; changing those values invalidates consent to prevent unintended charges.
 - Certificate extraction uses Gateway SDK and preserves only printed ownership and expiry fields; structured validation and uncertainty flags prevent AI inference from becoming legal evidence.
 - Product events fire directly in successful existing browser handlers and use a closed non-personal catalog with bounded asset_category enums instead of IP-prefixed property names that trigger privacy validation; payment-status events measure observed confirmations, not authoritative revenue totals.
+- KIPI verification creation and processing require administrator MFA at both server and database boundaries; linked requests retain the listing owner's identity so independent review and private evidence permissions stay intact.
+- Dashboard totals aggregate complete caller-authorized records in PostgreSQL, not the capped payment list, to keep live revenue accurate.
+- Payment failure notifications and audits run on actual database status transitions so retries cannot duplicate owner notices.
+- Daraja callbacks use the app's stable public payment endpoint, never an editor URL or caller-provided origin, to preserve independent reconciliation.
