@@ -106,7 +106,7 @@ SELECT pg_temp.assert_true(public.has_role('10000000-0000-0000-0000-000000000003
 SELECT manage_account_role('10000000-0000-0000-0000-000000000003','rights_holder',false);
 SELECT pg_temp.assert_true(NOT public.has_role('10000000-0000-0000-0000-000000000003','rights_holder'),'administrator can revoke seller access');
 SELECT pg_temp.assert_true((SELECT count(*)=2 FROM audit_logs WHERE entity_id='10000000-0000-0000-0000-000000000003' AND action IN ('account.role_granted','account.role_removed')),'role grant and removal both record audit history');
-SELECT pg_temp.expect_error($q$SELECT manage_account_role(auth.uid(),'admin',false)$q$,'own administrator access','administrator cannot lock themselves out');
+SELECT pg_temp.expect_error($q$SELECT manage_account_role(auth.uid(),'admin',false)$q$,'Only the super administrator','ordinary administrator cannot remove administrator access');
 SELECT manage_account_role('10000000-0000-0000-0000-000000000003','buyer',false);
 SELECT pg_temp.assert_true((SELECT count(*)>=3 FROM audit_logs WHERE action IN ('account.role_granted','account.role_removed') AND actor_id='10000000-0000-0000-0000-000000000004'),'admin activity log records role changes');
 SELECT pg_temp.assert_true((SELECT count(*)>=1 FROM audit_logs WHERE action IN ('kyc.approved','kyc.rejected')),'admin activity log records identity decisions');

@@ -20,4 +20,6 @@ describe("KIPI evidence rules",()=>{
  test("10MB limit is enforced",()=>expect(()=>validateDocument(new Uint8Array(MAX_CERTIFICATE_BYTES+1),"application/pdf")).toThrow());
  test("native INID records retain original evidence",()=>{const parsed=parseJournalPage("1.0 Patents\nNational phase of PCT applications\n(21): 2008/000123 (22): 01/01/2008 (54): WATER FILTER\n(71): Example Ltd (85): 01/02/2008");expect(parsed.records[0]?.number).toBe("2008/000123");expect(parsed.records[0]?.applicant).toBe("Example Ltd");expect(parsed.records[0]?.status).toBe("application_publication");});
  test("scanned or empty pages require OCR",()=>expect(parseJournalPage("").requiresOcr).toBe(true));
+ test("prefix-bearing regional numbers are preserved",()=>expect(parseJournalPage("1.0 PATENTS\n(21): AP/P/1999/001658 (54): WATER FILTER (71): Example Ltd (22): 01/01/1999").records[0]?.number).toBe("AP/P/1999/001658"));
+ test("mid-page headings select the correct category",()=>{const p=parseJournalPage("3.0 UTILITY MODELS\n(21): 2008/0001 (54): PUMP (71): Example Ltd\n4.0 TRADE MARKS\n(210): KE/T/2001/051487 (540): BRAND (730): Another Ltd");expect(p.records.map(r=>r.category)).toEqual(["utility_model","trademark"]);});
 });

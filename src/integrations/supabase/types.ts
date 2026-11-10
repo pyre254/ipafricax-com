@@ -1239,6 +1239,24 @@ export type Database = {
           },
         ]
       }
+      marketplace_maintenance_state: {
+        Row: {
+          last_completed_at: string | null
+          lease_until: string | null
+          singleton: boolean
+        }
+        Insert: {
+          last_completed_at?: string | null
+          lease_until?: string | null
+          singleton?: boolean
+        }
+        Update: {
+          last_completed_at?: string | null
+          lease_until?: string | null
+          singleton?: boolean
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1433,7 +1451,9 @@ export type Database = {
       }
       claim_ip_verification: { Args: { p_id: string }; Returns: boolean }
       claim_kipi_journal: { Args: { p_id: string }; Returns: boolean }
+      claim_kipi_journal_internal: { Args: { p_id: string }; Returns: boolean }
       claim_listing_payment_check: { Args: { p_id: string }; Returns: boolean }
+      claim_marketplace_maintenance: { Args: never; Returns: boolean }
       decide_kyc: {
         Args: { p_id: string; p_notes: string; p_status: string }
         Returns: undefined
@@ -1468,6 +1488,7 @@ export type Database = {
       }
       process_listing_visibility_notifications: { Args: never; Returns: number }
       queue_expiry_reminders: { Args: never; Returns: number }
+      release_marketplace_maintenance: { Args: never; Returns: undefined }
       review_ip_verification: {
         Args: {
           p_confirmation_url?: string

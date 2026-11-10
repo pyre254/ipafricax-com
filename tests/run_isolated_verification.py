@@ -16,7 +16,7 @@ CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
 CREATE ROLE service_role NOLOGIN BYPASSRLS;
 CREATE SCHEMA auth;
-CREATE TABLE auth.users(id uuid PRIMARY KEY,raw_user_meta_data jsonb DEFAULT '{}');
+CREATE TABLE auth.users(id uuid PRIMARY KEY,email text,raw_user_meta_data jsonb DEFAULT '{}');
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$
  SELECT nullif(coalesce(current_setting('request.jwt.claim.sub',true),
  current_setting('request.jwt.claims',true)::jsonb->>'sub'),'')::uuid
@@ -56,7 +56,7 @@ def main():
             run(connection,input=BOOTSTRAP,stdout=subprocess.DEVNULL)
             for migration in sorted((ROOT/'supabase/migrations').glob('*.sql'))+sorted((ROOT/'drizzle/migrations').glob('*.sql')):
                 run(connection+['-f',str(migration)],stdout=subprocess.DEVNULL)
-            run(connection+['-f',str(ROOT/'tests/isolated_verification.sql')],stdout=subprocess.DEVNULL)
+            run(connection,input='\n'.join((ROOT/'tests'/name).read_text() for name in ['isolated_verification.sql','visibility_database.sql','kipi_review_database.sql']),stdout=subprocess.DEVNULL)
         finally:
             run(['pg_ctl','-D',str(base/'data'),'-m','immediate','-w','stop'],preexec_fn=demote,stdout=subprocess.DEVNULL)
 

@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { submissionSchema, normalizeNumber, validateDocument, compareEvidence, reportDisclaimer } from "./ip-verification";
 
+export const ownsVerification=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{const {data:row,error}=await context.supabase.from("ip_verification_requests").select("id").eq("id",data.id).eq("user_id",context.userId).maybeSingle();if(error)throw new Error("Could not check request access.");return Boolean(row);});
+
 export const listVerifications=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>z.object({page:z.number().int().min(1).default(1),admin:z.boolean().default(false)}).parse(input)).handler(async({data,context})=>{
   if(data.admin){const {data:allowed}=await context.supabase.rpc("has_role",{_user_id:context.userId,_role:"admin"});if(!allowed)throw new Error("Administrator MFA required.");}
   let query=context.supabase.from("ip_verification_requests").select("*",{count:"exact"}).order("created_at",{ascending:false});if(!data.admin)query=query.eq("user_id",context.userId);
@@ -89,5 +91,10 @@ export const downloadVerificationReport=createServerFn({method:"POST"}).middlewa
   write("IP AFRICA EXCHANGE",true);write("INTELLECTUAL PROPERTY EVIDENCE VERIFICATION REPORT",true);write(`Reference: ${request.verification_reference}`);write(`Generated: ${new Date().toISOString()}`);write(`IP category: ${request.ip_category}`);write(`Number: ${request.registration_number}`);write(`Applicant: ${request.applicant_name}`);write(`Title: ${request.ip_title||"Not supplied"}`);write(`AI / evidence assessment: ${result.result_status}`);write(`Administrator decision: ${request.administrator_decision||"Not reviewed"}`);write(`Certificate authenticity: ${result.certificate_authenticity}`);write(`Recorded status: ${result.registration_status}`);write(result.evidence_summary);
   write("FIELD COMPARISONS",true);for(const item of Array.isArray(result.field_comparison)?result.field_comparison:[]){if(item&&typeof item==="object"&&!Array.isArray(item))write(`${item.field}: ${item.submitted||"Not supplied"} / ${item.official||"Unconfirmed"} (${item.outcome})`);}
   write("OFFICIAL EVIDENCE",true);for(const e of evidence??[]){write(`${e.source_title}, PDF page ${e.page_number}`);write(e.source_url);write(e.supporting_extract.slice(0,700));}write("COVERAGE AND LIMITATIONS",true);write(JSON.stringify(result.coverage_snapshot));write(reportDisclaimer);
-  const bytes=await pdf.save();return {base64:Buffer.from(bytes).toString("base64"),filename:`${request.verification_reference}.pdf`};
+  const bytes=await pdf.save();
+  const {supabaseAdmin}=await import("@/integrations/supabase/client.server");
+  const reportPath=`${request.user_id}/reports/${request.id}/${result.id}.pdf`;
+  const {error:saveError}=await supabaseAdmin.storage.from("ip-verification-private").upload(reportPath,bytes,{contentType:"application/pdf",upsert:true});if(saveError)throw new Error("Could not securely save the report.");
+  const {error:pathError}=await supabaseAdmin.from("ip_verification_results").update({report_path:reportPath}).eq("id",result.id);if(pathError)throw pathError;
+  return {base64:Buffer.from(bytes).toString("base64"),filename:`${request.verification_reference}.pdf`};
 });
