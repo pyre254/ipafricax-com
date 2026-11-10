@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ServicesRouteImport } from './routes/services'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
@@ -25,6 +26,7 @@ import { Route as AuthenticatedAdminIpVerificationRouteImport } from './routes/_
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
 import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
+import { Route as AuthenticatedServicesNewRouteImport } from './routes/_authenticated.services_.new'
 import { Route as AuthenticatedVerificationIdRouteImport } from './routes/_authenticated.verification_.$id'
 import { Route as AuthenticatedVerificationHistoryRouteImport } from './routes/_authenticated.verification_.history'
 import { Route as AuthenticatedVerificationNewRouteImport } from './routes/_authenticated.verification_.new'
@@ -59,6 +61,11 @@ const MarketplaceRoute = MarketplaceRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerificationRoute = VerificationRouteImport.update({
@@ -113,6 +120,12 @@ const AuthenticatedListingsNewRoute =
     path: '/listings/new',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedServicesNewRoute =
+  AuthenticatedServicesNewRouteImport.update({
+    id: '/services_/new',
+    path: '/services/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedVerificationIdRoute =
   AuthenticatedVerificationIdRouteImport.update({
     id: '/verification_/$id',
@@ -153,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/services': typeof ServicesRoute
   '/verification': typeof VerificationRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -163,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/services/new': typeof AuthenticatedServicesNewRoute
   '/verification/$id': typeof AuthenticatedVerificationIdRoute
   '/verification/history': typeof AuthenticatedVerificationHistoryRoute
   '/verification/new': typeof AuthenticatedVerificationNewRoute
@@ -176,6 +191,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
@@ -185,6 +201,7 @@ export interface FileRoutesByTo {
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
+  '/services/new': typeof AuthenticatedServicesNewRoute
   '/verification/$id': typeof AuthenticatedVerificationIdRoute
   '/verification/history': typeof AuthenticatedVerificationHistoryRoute
   '/verification/new': typeof AuthenticatedVerificationNewRoute
@@ -200,6 +217,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/services': typeof ServicesRoute
   '/verification': typeof VerificationRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -210,6 +228,7 @@ export interface FileRoutesById {
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
   '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
+  '/_authenticated/services_/new': typeof AuthenticatedServicesNewRoute
   '/_authenticated/verification_/$id': typeof AuthenticatedVerificationIdRoute
   '/_authenticated/verification_/history': typeof AuthenticatedVerificationHistoryRoute
   '/_authenticated/verification_/new': typeof AuthenticatedVerificationNewRoute
@@ -225,6 +244,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/marketplace'
     | '/reset-password'
+    | '/services'
     | '/verification'
     | '/admin'
     | '/dashboard'
@@ -235,6 +255,7 @@ export interface FileRouteTypes {
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/services/new'
     | '/verification/$id'
     | '/verification/history'
     | '/verification/new'
@@ -248,6 +269,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/marketplace'
     | '/reset-password'
+    | '/services'
     | '/admin'
     | '/dashboard'
     | '/kyc'
@@ -257,6 +279,7 @@ export interface FileRouteTypes {
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
+    | '/services/new'
     | '/verification/$id'
     | '/verification/history'
     | '/verification/new'
@@ -271,6 +294,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/marketplace'
     | '/reset-password'
+    | '/services'
     | '/verification'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
@@ -281,6 +305,7 @@ export interface FileRouteTypes {
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
     | '/_authenticated/listings/new'
+    | '/_authenticated/services_/new'
     | '/_authenticated/verification_/$id'
     | '/_authenticated/verification_/history'
     | '/_authenticated/verification_/new'
@@ -296,6 +321,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   MarketplaceRoute: typeof MarketplaceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ServicesRoute: typeof ServicesRoute
   VerificationRoute: typeof VerificationRouteWithChildren
   ApiAiSearchRoute: typeof ApiAiSearchRoute
   ApiAiValueRoute: typeof ApiAiValueRoute
@@ -344,6 +370,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verification': {
@@ -416,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedListingsNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/services_/new': {
+      id: '/_authenticated/services_/new'
+      path: '/services/new'
+      fullPath: '/services/new'
+      preLoaderRoute: typeof AuthenticatedServicesNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/verification_/$id': {
       id: '/_authenticated/verification_/$id'
       path: '/verification/$id'
@@ -470,6 +510,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEscrowIdRoute: typeof AuthenticatedEscrowIdRoute
   AuthenticatedListingsIdRoute: typeof AuthenticatedListingsIdRoute
   AuthenticatedListingsNewRoute: typeof AuthenticatedListingsNewRoute
+  AuthenticatedServicesNewRoute: typeof AuthenticatedServicesNewRoute
   AuthenticatedVerificationIdRoute: typeof AuthenticatedVerificationIdRoute
   AuthenticatedVerificationHistoryRoute: typeof AuthenticatedVerificationHistoryRoute
   AuthenticatedVerificationNewRoute: typeof AuthenticatedVerificationNewRoute
@@ -484,6 +525,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedEscrowIdRoute: AuthenticatedEscrowIdRoute,
   AuthenticatedListingsIdRoute: AuthenticatedListingsIdRoute,
   AuthenticatedListingsNewRoute: AuthenticatedListingsNewRoute,
+  AuthenticatedServicesNewRoute: AuthenticatedServicesNewRoute,
   AuthenticatedVerificationIdRoute: AuthenticatedVerificationIdRoute,
   AuthenticatedVerificationHistoryRoute: AuthenticatedVerificationHistoryRoute,
   AuthenticatedVerificationNewRoute: AuthenticatedVerificationNewRoute,
@@ -512,6 +554,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   MarketplaceRoute: MarketplaceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ServicesRoute: ServicesRoute,
   VerificationRoute: VerificationRouteWithChildren,
   ApiAiSearchRoute: ApiAiSearchRoute,
   ApiAiValueRoute: ApiAiValueRoute,

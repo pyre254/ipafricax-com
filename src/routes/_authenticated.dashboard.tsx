@@ -7,6 +7,8 @@ import { NotificationsPanel } from "@/components/review-panels";
 import { ShieldCheck, Plus, Banknote, FileCheck2, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { accountRoles } from "@/lib/account-roles";
+import { Suspense } from "react";
+import { SubscriptionPortfolio } from "@/components/subscription-portfolio";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => pageMeta('Your portfolio', 'Manage your IP assets, verification and deals.'),
@@ -75,6 +77,7 @@ function Dashboard() {
       )}
 
       {user && <NotificationsPanel userId={user.id} />}
+      <section className="mt-10"><Suspense fallback={<p className="text-sm text-muted-foreground">Loading listing visibility…</p>}><SubscriptionPortfolio /></Suspense></section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
         <Stat icon={FileCheck2} label="Active listings" value={listings.filter((l) => l.status === "active").length.toString()} />

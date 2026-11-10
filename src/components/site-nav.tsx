@@ -24,6 +24,7 @@ export function SiteNav() {
         <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-foreground/70">
           <Link to="/marketplace" className="hover:text-navy transition-colors">Marketplace</Link>
           <Link to="/verification" className="hover:text-navy transition-colors">IP verification</Link>
+          <Link to="/services" className="hover:text-navy transition-colors">Services</Link>
           {user && <Link to="/dashboard" className="hover:text-navy transition-colors">Dashboard</Link>}
           {user && <Link to="/profile" className="hover:text-navy transition-colors">Profile</Link>}
           {user && hasRole("rights_holder") && <Link to="/listings/new" className="hover:text-navy transition-colors">List IP</Link>}
