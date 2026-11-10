@@ -65,34 +65,6 @@
         }
       }
     },
-    "project.verification_reviewed": {
-      "event_schema_version": 1,
-      "description": "An authenticated administrator saves an IP verification review decision.",
-      "privacy": {
-        "contains_pii": false,
-        "purpose": "product_analytics"
-      },
-      "properties_schema": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "decision": {
-            "type": "string",
-            "enum": [
-              "approve",
-              "reject",
-              "needs_documents",
-              "kipi_confirmation",
-              "inconclusive",
-              "reopen"
-            ]
-          },
-          "ip_category": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "project.verification_reviewed_v2": {
       "event_schema_version": 1,
       "description": "An authenticated administrator saves an IP verification review decision, with a bounded non-personal asset category.",
@@ -125,29 +97,6 @@
               "copyright",
               "trade_secret"
             ]
-          }
-        }
-      }
-    },
-    "project.verification_submitted": {
-      "event_schema_version": 1,
-      "description": "Successful private verification submission.",
-      "privacy": {
-        "contains_pii": false,
-        "purpose": "product_analytics"
-      },
-      "properties_schema": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "ip_category": {
-            "type": "string"
-          },
-          "has_certificate": {
-            "type": "boolean"
-          },
-          "linked_listing": {
-            "type": "boolean"
           }
         }
       }
