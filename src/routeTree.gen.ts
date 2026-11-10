@@ -21,6 +21,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
+import { Route as VerificationSplatRouteImport } from './routes/verification_.$'
 import { Route as AuthenticatedAdminIpVerificationRouteImport } from './routes/_authenticated.admin_.ip-verification'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
@@ -92,6 +93,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const VerificationSplatRoute = VerificationSplatRouteImport.update({
+  id: '/verification_/$',
+  path: '/verification/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIpVerificationRoute =
   AuthenticatedAdminIpVerificationRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/verification/$': typeof VerificationSplatRoute
   '/admin/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/verification/$': typeof VerificationSplatRoute
   '/admin/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kyc': typeof AuthenticatedKycRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/verification_/$': typeof VerificationSplatRoute
   '/_authenticated/admin_/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kyc'
     | '/profile'
+    | '/verification/$'
     | '/admin/ip-verification'
     | '/escrow/$id'
     | '/listings/$id'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kyc'
     | '/profile'
+    | '/verification/$'
     | '/admin/ip-verification'
     | '/escrow/$id'
     | '/listings/$id'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/kyc'
     | '/_authenticated/profile'
+    | '/verification_/$'
     | '/_authenticated/admin_/ip-verification'
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   VerificationRoute: typeof VerificationRoute
+  VerificationSplatRoute: typeof VerificationSplatRoute
   ApiAiSearchRoute: typeof ApiAiSearchRoute
   ApiAiValueRoute: typeof ApiAiValueRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
@@ -416,6 +429,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/verification_/$': {
+      id: '/verification_/$'
+      path: '/verification/$'
+      fullPath: '/verification/$'
+      preLoaderRoute: typeof VerificationSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin_/ip-verification': {
       id: '/_authenticated/admin_/ip-verification'
@@ -550,6 +570,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   VerificationRoute: VerificationRoute,
+  VerificationSplatRoute: VerificationSplatRoute,
   ApiAiSearchRoute: ApiAiSearchRoute,
   ApiAiValueRoute: ApiAiValueRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
