@@ -1,3 +1,8 @@
+# Professional account categories
+- [ ] Remove Services discovery and submission pages/links, preserving existing listing/payment records.
+- [ ] Add professional categories to account creation and editable profiles without changing privileges.
+- [ ] Verify category persistence, old-page redirects, and mobile/desktop account creation.
+
 # Admin verification and per-listing renewals
 - [x] Move verification forms, history, reports, and journals into authenticator-protected Admin; ordinary accounts cannot create or run evidence checks.
 - [x] Confirm introductory periods, separate subscriptions, immediate expiry hiding, verified payment restoration, and retained history for IP and services.
