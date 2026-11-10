@@ -16,4 +16,4 @@
 - One authenticated daily maintenance job handles expiry reminders, official journal discovery and at most ten PDF pages; source failures retain previous evidence and database leases prevent concurrent processing.
 - Renewal prompts require a short-lived single-use owner/listing/phone/environment confirmation after Daraja preflight; changing those values invalidates consent to prevent unintended charges.
 - Certificate extraction uses Gateway SDK and preserves only printed ownership and expiry fields; structured validation and uncertainty flags prevent AI inference from becoming legal evidence.
-- Product events fire directly in successful existing browser handlers and use a closed non-personal catalog; payment-status events measure observed confirmations, not authoritative revenue totals.
+- Product events fire directly in successful existing browser handlers and use a closed non-personal catalog with bounded asset_category enums instead of IP-prefixed property names that trigger privacy validation; payment-status events measure observed confirmations, not authoritative revenue totals.

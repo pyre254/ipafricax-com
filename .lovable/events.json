@@ -65,9 +65,9 @@
         }
       }
     },
-    "project.verification_reviewed": {
+    "project.verification_reviewed_v2": {
       "event_schema_version": 1,
-      "description": "An authenticated administrator saves an IP verification review decision.",
+      "description": "An authenticated administrator saves an IP verification review decision, with a bounded non-personal asset category.",
       "privacy": {
         "contains_pii": false,
         "purpose": "product_analytics"
@@ -87,15 +87,23 @@
               "reopen"
             ]
           },
-          "ip_category": {
-            "type": "string"
+          "asset_category": {
+            "type": "string",
+            "enum": [
+              "patent",
+              "utility_model",
+              "industrial_design",
+              "trademark",
+              "copyright",
+              "trade_secret"
+            ]
           }
         }
       }
     },
-    "project.verification_submitted": {
+    "project.verification_submitted_v2": {
       "event_schema_version": 1,
-      "description": "Successful private verification submission.",
+      "description": "Successful private verification submission with a bounded non-personal asset category.",
       "privacy": {
         "contains_pii": false,
         "purpose": "product_analytics"
@@ -104,8 +112,16 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "ip_category": {
-            "type": "string"
+          "asset_category": {
+            "type": "string",
+            "enum": [
+              "patent",
+              "utility_model",
+              "industrial_design",
+              "trademark",
+              "copyright",
+              "trade_secret"
+            ]
           },
           "has_certificate": {
             "type": "boolean"
