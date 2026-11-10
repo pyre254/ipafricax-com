@@ -113,6 +113,13 @@
       "when": 1794282378195,
       "tag": "0015_renewal_phone_confirmation",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794282690904,
+      "tag": "0016_restrict_renewal_confirmation_grants",
+      "breakpoints": true
     }
   ]
 }
