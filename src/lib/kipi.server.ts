@@ -1,6 +1,7 @@
 import { KIPI_SOURCE,KIPI_START_YEAR,officialFileUrl } from "./ip-verification";
 export async function discoverOfficialJournals(actorId:string|null=null){
  const {supabaseAdmin}=await import("@/integrations/supabase/client.server");
+  await supabaseAdmin.from("kipi_sync_runs").update({status:"failed",error_message:"Discovery lease expired",completed_at:new Date().toISOString()}).eq("status","running").lt("started_at",new Date(Date.now()-300000).toISOString());
   const {data:active}=await supabaseAdmin.from("kipi_sync_runs").select("id").eq("status","running").gt("started_at",new Date(Date.now()-300000).toISOString()).limit(1);
   if(active?.length)throw new Error("Journal discovery is already running.");
   const {data:run,error:runError}=await supabaseAdmin.from("kipi_sync_runs").insert({status:"running"}).select("id").single();
