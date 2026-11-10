@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.verification_submitted": {
+      "event_schema_version": 1,
+      "description": "Successful private verification submission.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ip_category": {
+            "type": "string"
+          },
+          "has_certificate": {
+            "type": "boolean"
+          },
+          "linked_listing": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
