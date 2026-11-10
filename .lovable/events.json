@@ -1,6 +1,40 @@
 {
   "schema_version": 1,
   "events": {
+    "project.listing_renewal_requested": {
+      "event_schema_version": 1,
+      "description": "Daraja accepts a newly initiated listing renewal prompt after the owner confirms phone and amount.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "listing_type": {
+            "type": "string",
+            "enum": [
+              "ip_asset",
+              "service"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "sandbox",
+              "live"
+            ]
+          },
+          "amount_kes": {
+            "type": "number"
+          },
+          "days": {
+            "type": "number"
+          }
+        }
+      }
+    },
     "project.verification_reviewed": {
       "event_schema_version": 1,
       "description": "An authenticated administrator saves an IP verification review decision.",
