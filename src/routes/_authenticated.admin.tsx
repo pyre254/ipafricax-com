@@ -47,7 +47,7 @@ function Admin() {
 
 function AdminConsole() {
   const { user, hasRole } = useAuth();
-  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity" | "contact" | "visibility">("kyc");
+  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity" | "contact" | "visibility">(hasRole("admin") ? "visibility" : "kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [listings, setListings] = useState<ListingRow[]>([]);
