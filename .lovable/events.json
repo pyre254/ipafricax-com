@@ -93,6 +93,42 @@
         }
       }
     },
+    "project.verification_reviewed_v2": {
+      "event_schema_version": 1,
+      "description": "An authenticated administrator saves an IP verification review decision, with a bounded non-personal asset category.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject",
+              "needs_documents",
+              "kipi_confirmation",
+              "inconclusive",
+              "reopen"
+            ]
+          },
+          "asset_category": {
+            "type": "string",
+            "enum": [
+              "patent",
+              "utility_model",
+              "industrial_design",
+              "trademark",
+              "copyright",
+              "trade_secret"
+            ]
+          }
+        }
+      }
+    },
     "project.verification_submitted": {
       "event_schema_version": 1,
       "description": "Successful private verification submission.",
