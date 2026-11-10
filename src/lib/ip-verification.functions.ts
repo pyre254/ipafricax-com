@@ -3,6 +3,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { submissionSchema, normalizeNumber, validateDocument, compareEvidence, reportDisclaimer } from "./ip-verification";
 
+export const ownsVerification=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{const {data:row,error}=await context.supabase.from("ip_verification_requests").select("id").eq("id",data.id).eq("user_id",context.userId).maybeSingle();if(error)throw new Error("Could not check request access.");return Boolean(row);});
+
 export const listVerifications=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>z.object({page:z.number().int().min(1).default(1),admin:z.boolean().default(false)}).parse(input)).handler(async({data,context})=>{
   if(data.admin){const {data:allowed}=await context.supabase.rpc("has_role",{_user_id:context.userId,_role:"admin"});if(!allowed)throw new Error("Administrator MFA required.");}
   let query=context.supabase.from("ip_verification_requests").select("*",{count:"exact"}).order("created_at",{ascending:false});if(!data.admin)query=query.eq("user_id",context.userId);
