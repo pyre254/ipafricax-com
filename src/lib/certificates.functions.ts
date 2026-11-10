@@ -104,7 +104,7 @@ export const analyzeCertificate = createServerFn({ method: "POST" })
     const { streamResponse, GatewayError } = await import("@lovable.dev/ai-gateway");
     let text="",complete=false;
     try {
-      const stream=await streamResponse({model:MODEL,store:false,reasoning:{effort:"medium",summary:"auto"},include:["reasoning.encrypted_content"],text:{format:{type:"json_schema",name:"certificate_check",strict:true,schema:extractionSchema}},input:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:[{type:"input_text",text:`Listing details: ${JSON.stringify(listingFacts)}`},filePart]}]});
+      const stream=await streamResponse({model:MODEL,reasoning:{effort:"medium",summary:"auto"},include:["reasoning.encrypted_content"],text:{format:{type:"json_schema",name:"certificate_check",strict:true,schema:extractionSchema}},input:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:[{type:"input_text",text:`Listing details: ${JSON.stringify(listingFacts)}`},filePart]}]});
       for await(const event of stream){
         if(event.type==="response.output_text.delta")text+=event.delta;
         if(event.type==="response.refusal.delta")throw new Error("This document requires manual review.");
@@ -119,7 +119,7 @@ export const analyzeCertificate = createServerFn({ method: "POST" })
       }
       throw error;
     }
-    const result=z.object({is_certificate:z.boolean(),owner_name:z.string().nullable(),registration_number:z.string().nullable(),expiry_date:z.string().date().nullable(),grant_date:z.string().date().nullable(),match_score:z.number().int().min(0).max(100),mismatches:z.array(z.object({field:z.string(),listing_value:z.string().nullable(),certificate_value:z.string().nullable(),severity:z.enum(["high","medium","low"]),note:z.string()}))}).passthrough().parse(JSON.parse(text));
+    const result=z.object({is_certificate:z.boolean(),document_language:z.string(),issuing_office:z.string(),document_format:z.string().nullable(),title:z.string().nullable(),ip_type:z.string().nullable(),registration_authority:z.string().nullable(),jurisdiction:z.string().nullable(),applicant_address:z.string().nullable(),filing_date:z.string().date().nullable(),priority_date:z.string().date().nullable(),designated_states:z.array(z.string()),classes:z.array(z.string()),summary:z.string(),owner_name:z.string().nullable(),registration_number:z.string().nullable(),expiry_date:z.string().date().nullable(),grant_date:z.string().date().nullable(),match_score:z.number().int().min(0).max(100),mismatches:z.array(z.object({field:z.string(),listing_value:z.string().nullable(),certificate_value:z.string().nullable(),severity:z.enum(["high","medium","low"]),note:z.string()}))}).parse(JSON.parse(text));
     if(!result.is_certificate)result.mismatches.push({field:"Document type",listing_value:"Registration certificate",certificate_value:"Not a registration certificate",severity:"high",note:"Manual review required; extraction is not legal ownership verification."});
     const { mismatches, match_score, ...extracted } = result;
     const { data: row, error: insErr } = await supabase.from("certificate_checks").insert({
