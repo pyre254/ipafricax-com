@@ -25,6 +25,8 @@ SELECT pg_temp.expect_error($q$SELECT review_ip_verification('60000000-0000-0000
 SELECT review_ip_verification('60000000-0000-0000-0000-000000000003','approve','matching publication reviewed');
 SELECT pg_temp.assert_true((SELECT verification_status='PARTIALLY_VERIFIED' FROM ip_verification_requests WHERE id='60000000-0000-0000-0000-000000000003'),'administrator approval of publication remains partial verification');
 SELECT pg_temp.assert_true((SELECT count(*)=1 FROM ip_verification_reviews),'review decision retains history');
+SELECT pg_temp.assert_true((SELECT review_notes='matching publication reviewed' AND review_decision='approve' FROM ip_verification_reviews LIMIT 1),'IP verification decision and notes are preserved');
+SELECT pg_temp.assert_true((SELECT count(*)=1 FROM audit_logs WHERE action='verification.review_approve' AND entity_id='60000000-0000-0000-0000-000000000003'),'IP review decision is recorded in admin activity');
 SELECT review_ip_verification('60000000-0000-0000-0000-000000000003','reopen','new evidence requires reassessment');
 SELECT pg_temp.assert_true((SELECT administrator_decision IS NULL AND submission_status='submitted' FROM ip_verification_requests WHERE id='60000000-0000-0000-0000-000000000003'),'reopening removes decision lock without deleting history');
 SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',false);SELECT set_config('request.jwt.claim.aal','aal1',false);

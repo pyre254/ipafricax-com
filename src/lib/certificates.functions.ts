@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const GATEWAY = "https://ai.gateway.lovable.dev/v1/responses";
+import { printedOwnershipRules } from "./certificate-ownership";
+import { validateDocument } from "./ip-verification";
 const MODEL = "openai/gpt-6-astra";
 
 const extractionSchema = {
@@ -52,7 +53,8 @@ async function sha256Hex(bytes: ArrayBuffer | Uint8Array) {
   return { hex: [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join(""), raw: new Uint8Array(d) };
 }
 
-const SYSTEM_PROMPT = `You are an IP registry examiner for African IP offices. Read the registration certificate (it may be scanned, stamped, rotated, bilingual or partly handwritten) and compare it with the seller's listing.
+const SYSTEM_PROMPT = `${printedOwnershipRules}
+Read the registration certificate and compare its printed fields with the seller's listing.
 
 Office formats to recognise:
 - KIPI (Kenya Industrial Property Institute, Nairobi): English. Patents "KE/P/YYYY/NNNN" or plain numbers like "KE 1234"; utility models "KE/UM/..."; industrial designs "KE/ID/..."; trademarks "TMA No. NNNNNN" / "KE/T/YYYY/NNNNNN". Trademark registration lasts 10 years from filing, renewable; patents 20 years from filing (annual fees); utility models 10 years; designs 5 years + two 5-year renewals.
@@ -63,45 +65,13 @@ Office formats to recognise:
 Rules:
 - Keep owner names and registration numbers exactly as printed (original script/accents); do not translate them.
 - Dates as YYYY-MM-DD; convert from DD/MM/YYYY (the norm in Africa — never read as MM/DD), French month names, or Arabic numerals.
-- If no expiry is printed, compute expiry_date from the filing date and the office's term above, and say so in summary.
-- classes = Nice/Locarno/IPC classes printed. designated_states = ISO country codes for ARIPO designations or OAPI coverage.
+- If no expiry is printed, return null. General statutory terms above are context, not evidence of current expiry or renewal.
+- classes = Nice/Locarno/IPC classes printed. designated_states = only states explicitly printed, never inferred office coverage.
 - issuing_office: the office that issued the document. document_format: short description (e.g. "OAPI trademark certificate, French").
 - Flag every mismatch with the listing (title wording, IP type, registration number, authority, jurisdiction vs designated states, owner name/organisation, expired or soon-expiring rights). Treat translation-only differences (e.g. French vs English title with the same meaning) as low severity.
 - Use null for anything not on the document. match_score is 0-100 for how well the certificate supports the listing. Write summary and notes in English.`;
 
 const toDate = (v: unknown) => (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null);
-
-/** Reads the streamed Responses output and returns the final text. */
-async function readResponseText(res: Response) {
-  const reader = res.body!.getReader();
-  const dec = new TextDecoder();
-  let buf = "", text = "", err: string | null = null;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buf += dec.decode(value, { stream: true });
-    let i;
-    while ((i = buf.indexOf("\n\n")) >= 0) {
-      const frame = buf.slice(0, i); buf = buf.slice(i + 2);
-      for (const line of frame.split("\n")) {
-        if (!line.startsWith("data:")) continue;
-        const data = line.slice(5).trim();
-        if (!data || data === "[DONE]") continue;
-        try {
-          const ev = JSON.parse(data);
-          if (ev.type === "response.output_text.delta") text += ev.delta;
-          if (ev.type === "response.failed" || ev.type === "error") err = ev.response?.error?.message ?? ev.message ?? "AI request failed";
-          if (ev.type === "response.output_item.done" && ev.item?.content) {
-            for (const c of ev.item.content) if (c.type === "refusal") err = "The AI declined to read this document.";
-          }
-        } catch { /* partial */ }
-      }
-    }
-  }
-  if (err) throw new Error(err);
-  if (!text) throw new Error("The AI returned no result.");
-  return text;
-}
 
 export const analyzeCertificate = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -116,12 +86,14 @@ export const analyzeCertificate = createServerFn({ method: "POST" })
     const { data: blob, error } = await supabase.storage.from("ip-documents").download(data.path);
     if (error || !blob) throw new Error("Could not read the uploaded file.");
     if (blob.size > 15 * 1024 * 1024) throw new Error("File is too large (max 15 MB).");
-    const b64 = Buffer.from(await blob.arrayBuffer()).toString("base64");
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    validateDocument(bytes, data.mimeType);
+    const b64 = Buffer.from(bytes).toString("base64");
     const isPdf = data.mimeType === "application/pdf";
     if (!isPdf && !data.mimeType.startsWith("image/")) throw new Error("Upload a PDF or an image.");
     const filePart = isPdf
-      ? { type: "input_file", filename: data.fileName, file_data: `data:application/pdf;base64,${b64}` }
-      : { type: "input_image", image_url: `data:${data.mimeType};base64,${b64}` };
+      ? { type: "input_file" as const, filename: data.fileName, file_data: `data:application/pdf;base64,${b64}` }
+      : { type: "input_image" as const, detail: "auto" as const, image_url: `data:${data.mimeType};base64,${b64}` };
 
     const listingFacts = {
       title: listing.title, ip_type: listing.ip_type, registration_number: listing.registration_number,
@@ -129,36 +101,31 @@ export const analyzeCertificate = createServerFn({ method: "POST" })
       owner_name: profile?.full_name, owner_organization: profile?.organization,
     };
 
-    const key = process.env["LOVABLE_API_KEY"];
-    if (!key) throw new Error("AI is not configured.");
-    const res = await fetch(GATEWAY, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Lovable-API-Key": key, "X-Lovable-AIG-SDK": "fetch" },
-      body: JSON.stringify({
-        model: MODEL, stream: true, store: false,
-        reasoning: { effort: "medium", summary: "auto" }, include: ["reasoning.encrypted_content"],
-        text: { format: { type: "json_schema", name: "certificate_check", strict: true, schema: extractionSchema } },
-        input: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: [
-            { type: "input_text", text: `Listing details:\n${JSON.stringify(listingFacts, null, 2)}` },
-            filePart,
-          ] },
-        ],
-      }),
-    });
-    if (!res.ok) {
-      const t = await res.text();
-      if (res.status === 402) throw new Error("AI credits are used up. Add credits to continue.");
-      if (res.status === 429) throw new Error("AI is busy right now. Try again in a minute.");
-      throw new Error(`AI check failed (${res.status}): ${t.slice(0, 160)}`);
+    const { streamResponse, GatewayError } = await import("@lovable.dev/ai-gateway");
+    let text="",complete=false;
+    try {
+      const stream=await streamResponse({model:MODEL,reasoning:{effort:"medium",summary:"auto"},include:["reasoning.encrypted_content"],text:{format:{type:"json_schema",name:"certificate_check",strict:true,schema:extractionSchema}},input:[{role:"system",content:SYSTEM_PROMPT},{role:"user",content:[{type:"input_text",text:`Listing details: ${JSON.stringify(listingFacts)}`},filePart]}]});
+      for await(const event of stream){
+        if(event.type==="response.output_text.delta")text+=event.delta;
+        if(event.type==="response.refusal.delta")throw new Error("This document requires manual review.");
+        if(event.type==="response.completed")complete=true;
+      }
+      if(!complete||!text)throw new Error("Certificate reading did not complete. Your file remains private and saved.");
+    }catch(error){
+      if(error instanceof GatewayError){
+        if(error.httpStatus===402)throw new Error("AI credits are unavailable. Your document is saved; manual review is still available.");
+        if(error.httpStatus===429)throw new Error("Certificate reading is busy. Your file is saved; please try later.");
+        throw new Error("Certificate reading is unavailable. Your file is saved; manual review is still available.");
+      }
+      throw error;
     }
-    const result = JSON.parse(await readResponseText(res));
+    const result=z.object({is_certificate:z.boolean(),document_language:z.string(),issuing_office:z.string(),document_format:z.string().nullable(),title:z.string().nullable(),ip_type:z.string().nullable(),registration_authority:z.string().nullable(),jurisdiction:z.string().nullable(),applicant_address:z.string().nullable(),filing_date:z.string().date().nullable(),priority_date:z.string().date().nullable(),designated_states:z.array(z.string()),classes:z.array(z.string()),summary:z.string(),owner_name:z.string().nullable(),registration_number:z.string().nullable(),expiry_date:z.string().date().nullable(),grant_date:z.string().date().nullable(),match_score:z.number().int().min(0).max(100),mismatches:z.array(z.object({field:z.string(),listing_value:z.string().nullable(),certificate_value:z.string().nullable(),severity:z.enum(["high","medium","low"]),note:z.string()}))}).parse(JSON.parse(text));
+    if(!result.is_certificate)result.mismatches.push({field:"Document type",listing_value:"Registration certificate",certificate_value:"Not a registration certificate",severity:"high",note:"Manual review required; extraction is not legal ownership verification."});
     const { mismatches, match_score, ...extracted } = result;
     const { data: row, error: insErr } = await supabase.from("certificate_checks").insert({
       listing_id: listing.id, owner_id: userId, file_path: data.path, extracted, mismatches, match_score,
     }).select("*").single();
-    if (insErr) throw new Error(insErr.message);
+    if (insErr || !row) throw new Error("Could not save the certificate assessment.");
     if (mismatches.length === 0) await supabase.from("certificate_checks").update({ review_status: "not_required" }).eq("id", row.id);
     await supabase.from("ip_listings").update({ cert_expiry_date: toDate(extracted.expiry_date), cert_grant_date: toDate(extracted.grant_date) }).eq("id", listing.id);
     await supabase.from("audit_logs").insert({ actor_id: userId, action: "certificate.ai_checked", entity_type: "ip_listing", entity_id: listing.id, metadata: { match_score, mismatch_count: mismatches.length } });

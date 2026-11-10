@@ -14,3 +14,6 @@
 - Listing visibility is enforced by database read policies against per-listing expiry timestamps; approval and verified payments create periods transactionally, while owner read paths retain suspended listings.
 - Daraja STK uses explicitly authorized direct server credentials; unsigned callbacks only trigger independent STK status queries, and locked payment application prevents duplicate periods and excludes test payments from live visibility.
 - One authenticated daily maintenance job handles expiry reminders, official journal discovery and at most ten PDF pages; source failures retain previous evidence and database leases prevent concurrent processing.
+- Renewal prompts require a short-lived single-use owner/listing/phone/environment confirmation after Daraja preflight; changing those values invalidates consent to prevent unintended charges.
+- Certificate extraction uses Gateway SDK and preserves only printed ownership and expiry fields; structured validation and uncertainty flags prevent AI inference from becoming legal evidence.
+- Product events fire directly in successful existing browser handlers and use a closed non-personal catalog; payment-status events measure observed confirmations, not authoritative revenue totals.

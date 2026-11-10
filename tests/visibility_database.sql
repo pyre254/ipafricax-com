@@ -26,3 +26,18 @@ SELECT pg_temp.assert_true((SELECT expires_at='2027-01-09T12:00:00Z' FROM listin
 SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
 SELECT pg_temp.assert_true((SELECT count(*)=0 FROM listing_payments),'unrelated buyer cannot read private payment records');
 RESET ROLE;
+-- Single-use confirmation must bind the current owner, listing, phone and environment.
+INSERT INTO listing_renewal_confirmations(id,subscription_id,owner_id,phone_number,environment) SELECT '80000000-0000-0000-0000-000000000001',id,owner_id,'254700000000','sandbox' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'another user cannot consume phone confirmation');
+SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',false);
+SELECT pg_temp.expect_error($q$INSERT INTO listing_renewal_confirmations(subscription_id,owner_id,phone_number,environment) SELECT id,auth.uid(),'254700000000','sandbox' FROM listing_subscriptions LIMIT 1$q$,'permission denied','owners cannot mint a Daraja preflight confirmation');
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254711111111','sandbox'),'changing the phone requires new confirmation');
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','live'),'sandbox consent cannot authorise a live charge');
+SELECT pg_temp.assert_true(consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'correct owner consumes the matching confirmation');
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'confirmation cannot be reused');
+RESET ROLE;
+INSERT INTO listing_renewal_confirmations(id,subscription_id,owner_id,phone_number,environment,expires_at) SELECT '80000000-0000-0000-0000-000000000002',id,owner_id,'254700000000','sandbox',now()-interval '1 second' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',false);
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000002',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'expired phone confirmation cannot request a prompt');
+RESET ROLE;

@@ -22,4 +22,7 @@ describe("KIPI evidence rules",()=>{
  test("scanned or empty pages require OCR",()=>expect(parseJournalPage("").requiresOcr).toBe(true));
  test("prefix-bearing regional numbers are preserved",()=>expect(parseJournalPage("1.0 PATENTS\n(21): AP/P/1999/001658 (54): WATER FILTER (71): Example Ltd (22): 01/01/1999").records[0]?.number).toBe("AP/P/1999/001658"));
  test("mid-page headings select the correct category",()=>{const p=parseJournalPage("3.0 UTILITY MODELS\n(21): 2008/0001 (54): PUMP (71): Example Ltd\n4.0 TRADE MARKS\n(210): KE/T/2001/051487 (540): BRAND (730): Another Ltd");expect(p.records.map(r=>r.category)).toEqual(["utility_model","trademark"]);});
+ test("certificate owner mismatch is retained without a journal match",()=>{const result=compareEvidence(request,null,20,{is_certificate:true,owner_name:"Other owner",registration_number:request.registration_number,quality:90});expect(result.status).toBe("DISCREPANCY_DETECTED");expect(result.comparisons.find(c=>c.field==="Certificate proprietor vs submitted proprietor")?.official).toBe("Example Ltd");});
+ test("missing printed owner requires review even with a journal match",()=>expect(compareEvidence(request,record,20,{is_certificate:true,owner_name:null,quality:95}).status).toBe("MANUAL_REVIEW_REQUIRED"));
+ test("a journal page is not an ownership certificate",()=>expect(compareEvidence(request,record,20,{is_certificate:false,owner_name:"Example Ltd",quality:95}).status).toBe("MANUAL_REVIEW_REQUIRED"));
 });
