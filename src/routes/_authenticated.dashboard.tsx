@@ -80,7 +80,7 @@ function Dashboard() {
       <section className="mt-10"><Suspense fallback={<p className="text-sm text-muted-foreground">Loading listing visibility…</p>}><SubscriptionPortfolio /></Suspense></section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
-        <Stat icon={FileCheck2} label="Active listings" value={listings.filter((l) => l.status === "active").length.toString()} />
+        <Stat icon={FileCheck2} label="IP listings" value={listings.length.toString()} />
         <Stat icon={ShieldCheck} label="Verified IP" value={listings.filter((l) => l.verification_status === "verified").length.toString()} />
         <Stat icon={Banknote} label="Escrow deals" value={escrows.length.toString()} />
       </div>

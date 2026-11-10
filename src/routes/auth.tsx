@@ -123,7 +123,7 @@ function AuthPage() {
             {isSignup ? "Create your account" : "Welcome back"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {isSignup ? "Tell us a bit about you to get personalized listings and matches." : next === "verify-ip" ? "Sign in to verify an IP asset." : next === "verification-history" ? "Sign in to view your private verification history." : next === "list-service" ? "Sign in to list a professional service." : "Sign in to manage your portfolio and deals."}
+            {isSignup ? "Tell us a bit about you to get personalized listings and matches." : next === "admin-verification" ? "Sign in to access administrator IP verification." : next === "list-service" ? "Sign in to list a professional service." : "Sign in to manage your portfolio and deals."}
           </p>
 
           <form onSubmit={submit} className="mt-8 space-y-4">

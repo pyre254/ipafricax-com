@@ -21,18 +21,18 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedKycRouteImport } from './routes/_authenticated.kyc'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
-import { Route as VerificationIndexRouteImport } from './routes/verification.index'
+import { Route as VerificationSplatRouteImport } from './routes/verification_.$'
 import { Route as AuthenticatedAdminIpVerificationRouteImport } from './routes/_authenticated.admin_.ip-verification'
 import { Route as AuthenticatedEscrowIdRouteImport } from './routes/_authenticated.escrow.$id'
 import { Route as AuthenticatedListingsIdRouteImport } from './routes/_authenticated.listings.$id'
 import { Route as AuthenticatedListingsNewRouteImport } from './routes/_authenticated.listings.new'
 import { Route as AuthenticatedServicesNewRouteImport } from './routes/_authenticated.services_.new'
-import { Route as AuthenticatedVerificationIdRouteImport } from './routes/_authenticated.verification_.$id'
-import { Route as AuthenticatedVerificationHistoryRouteImport } from './routes/_authenticated.verification_.history'
-import { Route as AuthenticatedVerificationNewRouteImport } from './routes/_authenticated.verification_.new'
 import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
 import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
 import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
+import { Route as AuthenticatedAdminIpVerificationIdRouteImport } from './routes/_authenticated.admin_.ip-verification_.$id'
+import { Route as AuthenticatedAdminIpVerificationHistoryRouteImport } from './routes/_authenticated.admin_.ip-verification_.history'
+import { Route as AuthenticatedAdminIpVerificationNewRouteImport } from './routes/_authenticated.admin_.ip-verification_.new'
 import { Route as ApiPublicMpesaCallbackRouteImport } from './routes/api/public/mpesa/callback'
 
 const IndexRoute = IndexRouteImport.update({
@@ -94,10 +94,10 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const VerificationIndexRoute = VerificationIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => VerificationRoute,
+const VerificationSplatRoute = VerificationSplatRouteImport.update({
+  id: '/verification_/$',
+  path: '/verification/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminIpVerificationRoute =
   AuthenticatedAdminIpVerificationRouteImport.update({
@@ -127,24 +127,6 @@ const AuthenticatedServicesNewRoute =
     path: '/services/new',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
-const AuthenticatedVerificationIdRoute =
-  AuthenticatedVerificationIdRouteImport.update({
-    id: '/verification_/$id',
-    path: '/verification/$id',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedVerificationHistoryRoute =
-  AuthenticatedVerificationHistoryRouteImport.update({
-    id: '/verification_/history',
-    path: '/verification/history',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedVerificationNewRoute =
-  AuthenticatedVerificationNewRouteImport.update({
-    id: '/verification_/new',
-    path: '/verification/new',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const ApiAiSearchRoute = ApiAiSearchRouteImport.update({
   id: '/api/ai/search',
   path: '/api/ai/search',
@@ -160,6 +142,24 @@ const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
   path: '/api/public/maintenance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIpVerificationIdRoute =
+  AuthenticatedAdminIpVerificationIdRouteImport.update({
+    id: '/admin_/ip-verification_/$id',
+    path: '/admin/ip-verification/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminIpVerificationHistoryRoute =
+  AuthenticatedAdminIpVerificationHistoryRouteImport.update({
+    id: '/admin_/ip-verification_/history',
+    path: '/admin/ip-verification/history',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminIpVerificationNewRoute =
+  AuthenticatedAdminIpVerificationNewRouteImport.update({
+    id: '/admin_/ip-verification_/new',
+    path: '/admin/ip-verification/new',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiPublicMpesaCallbackRoute = ApiPublicMpesaCallbackRouteImport.update({
   id: '/api/public/mpesa/callback',
   path: '/api/public/mpesa/callback',
@@ -173,23 +173,23 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
-  '/verification': typeof VerificationRouteWithChildren
+  '/verification': typeof VerificationRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/verification/': typeof VerificationIndexRoute
+  '/verification/$': typeof VerificationSplatRoute
   '/admin/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
   '/services/new': typeof AuthenticatedServicesNewRoute
-  '/verification/$id': typeof AuthenticatedVerificationIdRoute
-  '/verification/history': typeof AuthenticatedVerificationHistoryRoute
-  '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/admin/ip-verification/$id': typeof AuthenticatedAdminIpVerificationIdRoute
+  '/admin/ip-verification/history': typeof AuthenticatedAdminIpVerificationHistoryRoute
+  '/admin/ip-verification/new': typeof AuthenticatedAdminIpVerificationNewRoute
   '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -199,22 +199,23 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
+  '/verification': typeof VerificationRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/kyc': typeof AuthenticatedKycRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/verification': typeof VerificationIndexRoute
+  '/verification/$': typeof VerificationSplatRoute
   '/admin/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/listings/$id': typeof AuthenticatedListingsIdRoute
   '/listings/new': typeof AuthenticatedListingsNewRoute
   '/services/new': typeof AuthenticatedServicesNewRoute
-  '/verification/$id': typeof AuthenticatedVerificationIdRoute
-  '/verification/history': typeof AuthenticatedVerificationHistoryRoute
-  '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/admin/ip-verification/$id': typeof AuthenticatedAdminIpVerificationIdRoute
+  '/admin/ip-verification/history': typeof AuthenticatedAdminIpVerificationHistoryRoute
+  '/admin/ip-verification/new': typeof AuthenticatedAdminIpVerificationNewRoute
   '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRoutesById {
@@ -226,23 +227,23 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
-  '/verification': typeof VerificationRouteWithChildren
+  '/verification': typeof VerificationRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/kyc': typeof AuthenticatedKycRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
-  '/verification/': typeof VerificationIndexRoute
+  '/verification_/$': typeof VerificationSplatRoute
   '/_authenticated/admin_/ip-verification': typeof AuthenticatedAdminIpVerificationRoute
   '/_authenticated/escrow/$id': typeof AuthenticatedEscrowIdRoute
   '/_authenticated/listings/$id': typeof AuthenticatedListingsIdRoute
   '/_authenticated/listings/new': typeof AuthenticatedListingsNewRoute
   '/_authenticated/services_/new': typeof AuthenticatedServicesNewRoute
-  '/_authenticated/verification_/$id': typeof AuthenticatedVerificationIdRoute
-  '/_authenticated/verification_/history': typeof AuthenticatedVerificationHistoryRoute
-  '/_authenticated/verification_/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
   '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
+  '/_authenticated/admin_/ip-verification_/$id': typeof AuthenticatedAdminIpVerificationIdRoute
+  '/_authenticated/admin_/ip-verification_/history': typeof AuthenticatedAdminIpVerificationHistoryRoute
+  '/_authenticated/admin_/ip-verification_/new': typeof AuthenticatedAdminIpVerificationNewRoute
   '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRouteTypes {
@@ -259,18 +260,18 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/kyc'
     | '/profile'
-    | '/verification/'
+    | '/verification/$'
     | '/admin/ip-verification'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
     | '/services/new'
-    | '/verification/$id'
-    | '/verification/history'
-    | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
     | '/api/public/maintenance'
+    | '/admin/ip-verification/$id'
+    | '/admin/ip-verification/history'
+    | '/admin/ip-verification/new'
     | '/api/public/mpesa/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -280,22 +281,23 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/reset-password'
     | '/services'
+    | '/verification'
     | '/admin'
     | '/dashboard'
     | '/kyc'
     | '/profile'
-    | '/verification'
+    | '/verification/$'
     | '/admin/ip-verification'
     | '/escrow/$id'
     | '/listings/$id'
     | '/listings/new'
     | '/services/new'
-    | '/verification/$id'
-    | '/verification/history'
-    | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
     | '/api/public/maintenance'
+    | '/admin/ip-verification/$id'
+    | '/admin/ip-verification/history'
+    | '/admin/ip-verification/new'
     | '/api/public/mpesa/callback'
   id:
     | '__root__'
@@ -311,18 +313,18 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/kyc'
     | '/_authenticated/profile'
-    | '/verification/'
+    | '/verification_/$'
     | '/_authenticated/admin_/ip-verification'
     | '/_authenticated/escrow/$id'
     | '/_authenticated/listings/$id'
     | '/_authenticated/listings/new'
     | '/_authenticated/services_/new'
-    | '/_authenticated/verification_/$id'
-    | '/_authenticated/verification_/history'
-    | '/_authenticated/verification_/new'
     | '/api/ai/search'
     | '/api/ai/value'
     | '/api/public/maintenance'
+    | '/_authenticated/admin_/ip-verification_/$id'
+    | '/_authenticated/admin_/ip-verification_/history'
+    | '/_authenticated/admin_/ip-verification_/new'
     | '/api/public/mpesa/callback'
   fileRoutesById: FileRoutesById
 }
@@ -334,7 +336,8 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
-  VerificationRoute: typeof VerificationRouteWithChildren
+  VerificationRoute: typeof VerificationRoute
+  VerificationSplatRoute: typeof VerificationSplatRoute
   ApiAiSearchRoute: typeof ApiAiSearchRoute
   ApiAiValueRoute: typeof ApiAiValueRoute
   ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
@@ -427,12 +430,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/verification/': {
-      id: '/verification/'
-      path: '/'
-      fullPath: '/verification/'
-      preLoaderRoute: typeof VerificationIndexRouteImport
-      parentRoute: typeof VerificationRoute
+    '/verification_/$': {
+      id: '/verification_/$'
+      path: '/verification/$'
+      fullPath: '/verification/$'
+      preLoaderRoute: typeof VerificationSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin_/ip-verification': {
       id: '/_authenticated/admin_/ip-verification'
@@ -469,27 +472,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedServicesNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/verification_/$id': {
-      id: '/_authenticated/verification_/$id'
-      path: '/verification/$id'
-      fullPath: '/verification/$id'
-      preLoaderRoute: typeof AuthenticatedVerificationIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/verification_/history': {
-      id: '/_authenticated/verification_/history'
-      path: '/verification/history'
-      fullPath: '/verification/history'
-      preLoaderRoute: typeof AuthenticatedVerificationHistoryRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/verification_/new': {
-      id: '/_authenticated/verification_/new'
-      path: '/verification/new'
-      fullPath: '/verification/new'
-      preLoaderRoute: typeof AuthenticatedVerificationNewRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/api/ai/search': {
       id: '/api/ai/search'
       path: '/api/ai/search'
@@ -511,6 +493,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin_/ip-verification_/$id': {
+      id: '/_authenticated/admin_/ip-verification_/$id'
+      path: '/admin/ip-verification/$id'
+      fullPath: '/admin/ip-verification/$id'
+      preLoaderRoute: typeof AuthenticatedAdminIpVerificationIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin_/ip-verification_/history': {
+      id: '/_authenticated/admin_/ip-verification_/history'
+      path: '/admin/ip-verification/history'
+      fullPath: '/admin/ip-verification/history'
+      preLoaderRoute: typeof AuthenticatedAdminIpVerificationHistoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin_/ip-verification_/new': {
+      id: '/_authenticated/admin_/ip-verification_/new'
+      path: '/admin/ip-verification/new'
+      fullPath: '/admin/ip-verification/new'
+      preLoaderRoute: typeof AuthenticatedAdminIpVerificationNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/mpesa/callback': {
       id: '/api/public/mpesa/callback'
       path: '/api/public/mpesa/callback'
@@ -531,9 +534,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedListingsIdRoute: typeof AuthenticatedListingsIdRoute
   AuthenticatedListingsNewRoute: typeof AuthenticatedListingsNewRoute
   AuthenticatedServicesNewRoute: typeof AuthenticatedServicesNewRoute
-  AuthenticatedVerificationIdRoute: typeof AuthenticatedVerificationIdRoute
-  AuthenticatedVerificationHistoryRoute: typeof AuthenticatedVerificationHistoryRoute
-  AuthenticatedVerificationNewRoute: typeof AuthenticatedVerificationNewRoute
+  AuthenticatedAdminIpVerificationIdRoute: typeof AuthenticatedAdminIpVerificationIdRoute
+  AuthenticatedAdminIpVerificationHistoryRoute: typeof AuthenticatedAdminIpVerificationHistoryRoute
+  AuthenticatedAdminIpVerificationNewRoute: typeof AuthenticatedAdminIpVerificationNewRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -546,25 +549,16 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedListingsIdRoute: AuthenticatedListingsIdRoute,
   AuthenticatedListingsNewRoute: AuthenticatedListingsNewRoute,
   AuthenticatedServicesNewRoute: AuthenticatedServicesNewRoute,
-  AuthenticatedVerificationIdRoute: AuthenticatedVerificationIdRoute,
-  AuthenticatedVerificationHistoryRoute: AuthenticatedVerificationHistoryRoute,
-  AuthenticatedVerificationNewRoute: AuthenticatedVerificationNewRoute,
+  AuthenticatedAdminIpVerificationIdRoute:
+    AuthenticatedAdminIpVerificationIdRoute,
+  AuthenticatedAdminIpVerificationHistoryRoute:
+    AuthenticatedAdminIpVerificationHistoryRoute,
+  AuthenticatedAdminIpVerificationNewRoute:
+    AuthenticatedAdminIpVerificationNewRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
-)
-
-interface VerificationRouteChildren {
-  VerificationIndexRoute: typeof VerificationIndexRoute
-}
-
-const VerificationRouteChildren: VerificationRouteChildren = {
-  VerificationIndexRoute: VerificationIndexRoute,
-}
-
-const VerificationRouteWithChildren = VerificationRoute._addFileChildren(
-  VerificationRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -575,7 +569,8 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
-  VerificationRoute: VerificationRouteWithChildren,
+  VerificationRoute: VerificationRoute,
+  VerificationSplatRoute: VerificationSplatRoute,
   ApiAiSearchRoute: ApiAiSearchRoute,
   ApiAiValueRoute: ApiAiValueRoute,
   ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,

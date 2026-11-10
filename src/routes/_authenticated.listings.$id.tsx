@@ -156,7 +156,7 @@ function ListingDetail() {
           )}
 
           {isOwner && <CertificateCheckPanel listingId={listing.id} ownerId={listing.owner_id} />}
-          {isOwner && <Button asChild variant="outline" className="mt-6"><Link to="/verification/new" search={{ listing: listing.id }}>Check against KIPI journals</Link></Button>}
+          {hasRole("admin") && <Button asChild variant="outline" className="mt-6"><Link to="/admin/ip-verification/new" search={{ listing: listing.id }}>Verify IP in Admin</Link></Button>}
           <BlockchainProofPanel listingId={listing.id} canAnchor={listing.verification_status === "verified" && (isOwner || isAdmin)} />
           {(isOwner || isAdmin) && <AssetHistoryPanel listingId={listing.id} expiry={(listing as { cert_expiry_date?: string | null }).cert_expiry_date} />}
 

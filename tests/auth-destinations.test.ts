@@ -2,11 +2,12 @@ import { describe, expect, it } from "bun:test";
 import { postSignInDestination } from "../src/lib/auth-destinations";
 
 describe("sign-in continuations", () => {
-  it("returns verification submissions to their form", () => {
-    expect(postSignInDestination("verify-ip")).toEqual({ to: "/verification/new", search: { listing: undefined } });
+  it("returns administrator verification requests to Admin", () => {
+    expect(postSignInDestination("admin-verification")).toEqual({ to: "/admin/ip-verification" });
   });
-  it("returns verification history requests to their private history", () => {
-    expect(postSignInDestination("verification-history")).toEqual({ to: "/verification/history" });
+  it("ordinary verification continuations no longer open verification tools", () => {
+    expect(postSignInDestination("verification-history")).toEqual({ to: "/dashboard" });
+    expect(postSignInDestination("verify-ip")).toEqual({ to: "/dashboard" });
   });
   it("returns service submissions to their form", () => {
     expect(postSignInDestination("list-service")).toEqual({ to: "/services/new" });

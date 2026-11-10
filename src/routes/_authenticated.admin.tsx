@@ -16,7 +16,7 @@ import { Suspense } from "react";
 import { SubscriptionPortfolio } from "@/components/subscription-portfolio";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => pageMeta('Verification console', 'Review identity documents and intellectual property ownership.'),
+  head: () => pageMeta('Administration', 'Review IP and service listings, monitor subscriptions, payments and revenue.'),
   beforeLoad: async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw redirect({ to: "/auth", search: { mode: "signin" } });
@@ -47,7 +47,7 @@ function Admin() {
 
 function AdminConsole() {
   const { user, hasRole } = useAuth();
-  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity" | "contact" | "visibility">("kyc");
+  const [tab, setTab] = useState<"kyc" | "listings" | "certs" | "audit" | "users" | "activity" | "contact" | "visibility">(hasRole("admin") ? "visibility" : "kyc");
   const [kyc, setKyc] = useState<KycRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [listings, setListings] = useState<ListingRow[]>([]);
@@ -75,9 +75,9 @@ function AdminConsole() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
-      <p className="text-xs uppercase tracking-widest text-primary">Verifier console</p>
-      <h1 className="mt-2 font-display text-3xl md:text-4xl font-semibold">Trust & verification queue</h1>
-      {hasRole("admin") && <Button asChild variant="outline" className="mt-5"><Link to="/admin/ip-verification"><FileSearch/>KIPI verification centre</Link></Button>}
+      <p className="text-xs uppercase tracking-widest text-primary">Administration</p>
+      <h1 className="mt-2 font-display text-3xl md:text-4xl font-semibold">Admin dashboard</h1>
+      {hasRole("admin") && <Button asChild variant="outline" className="mt-5"><Link to="/admin/ip-verification"><FileSearch/>IP verification</Link></Button>}
 
       <div className="mt-6 flex flex-wrap gap-2 text-sm">
         {([["kyc", "KYC"], ["listings", "Listings"], ["certs", "Certificate flags"], ["audit", "Audit log"]] as const).map(([k, l]) => (

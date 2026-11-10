@@ -1,0 +1,178 @@
+import { AdminMfaGate } from "@/components/admin-mfa-gate";
+import { requireVerificationAdministrator } from "@/components/admin-verification-access";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { FileSearch, Loader2, Lock } from "lucide-react";
+import { submitVerification } from "@/lib/ip-verification.functions";
+import { categories } from "@/lib/ip-verification";
+import { pageMeta } from "@/lib/page-meta";
+import { VerificationHeader } from "@/components/verification-ui";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+export const Route = createFileRoute("/_authenticated/admin_/ip-verification_/new")({
+  head: () =>
+    pageMeta(
+      "Verify an IP asset",
+      "Submit an IP number and optional certificate for independent KIPI evidence checks.",
+    ),
+  validateSearch: (s: Record<string, unknown>) => ({
+    listing: typeof s.listing === "string" ? s.listing : undefined,
+  }),
+  beforeLoad: requireVerificationAdministrator,
+  component: () => (
+    <AdminMfaGate>
+      <NewVerification />
+    </AdminMfaGate>
+  ),
+});
+function NewVerification() {
+  const submit = useServerFn(submitVerification),
+    navigate = useNavigate();
+  const { listing } = Route.useSearch();
+  const [busy, setBusy] = useState(false),
+    [category, setCategory] = useState("patent");
+  const fields = [
+    { name: "registration_number", label: "Registration / application number", required: true },
+    { name: "applicant_name", label: "Applicant / proprietor name", required: true },
+    { name: "certificate_number", label: "Certificate number (optional)" },
+    { name: "ip_title", label: "IP title (optional)" },
+    { name: "application_date", label: "Application date (optional)", type: "date" },
+    {
+      name: "claimed_registration_date",
+      label: "Registration / grant date (optional)",
+      type: "date",
+    },
+  ];
+  return (
+    <>
+      <VerificationHeader
+        title="Verify an IP asset"
+        subtitle="Submit a number alone, or include a certificate and supporting evidence. Your documents remain private."
+        action={false}
+      />
+      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setBusy(true);
+            const form = new FormData(e.currentTarget);
+            const facts = Object.fromEntries(
+              fields.map((f) => [f.name, String(form.get(f.name) || "")]),
+            );
+            form.set(
+              "facts",
+              JSON.stringify({
+                ...facts,
+                ip_category: category,
+                declared_authorized: true,
+                ...(listing ? { listing_id: listing } : {}),
+              }),
+            );
+            try {
+              const r = await submit({ data: form });
+              window.__lovableEvents?.track?.("project.verification_submitted_v2", {
+                asset_category: category,
+                has_certificate: form
+                  .getAll("certificate")
+                  .some((f) => f instanceof File && f.size > 0),
+                linked_listing: Boolean(listing),
+              });
+              await navigate({ to: "/admin/ip-verification/$id", params: { id: r.id } });
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Submission failed.");
+            } finally {
+              setBusy(false);
+            }
+          }}
+          className="space-y-7"
+        >
+          <div>
+            <label htmlFor="ip-category" className="text-sm font-medium">
+              IP category
+            </label>
+            <select
+              id="ip-category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="mt-2 block h-11 w-full rounded-md border border-input bg-card px-3 text-sm"
+            >
+              {categories.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {category === "copyright" && (
+            <p className="border-l-2 border-accent bg-accent/5 p-4 text-sm">
+              Copyright requires KECOBO confirmation, not a KIPI journal check.
+            </p>
+          )}
+          <div className="grid gap-6 sm:grid-cols-2">
+            {fields.map((f) => (
+              <div key={f.name}>
+                <label htmlFor={f.name} className="text-sm font-medium">
+                  {f.label}
+                </label>
+                <input
+                  id={f.name}
+                  name={f.name}
+                  type={f.type || "text"}
+                  required={f.required}
+                  maxLength={f.type ? undefined : 500}
+                  className="mt-2 block h-11 w-full rounded-md border border-input bg-card px-3 text-sm"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="grid gap-6 border-y border-border py-6 sm:grid-cols-2">
+            <div>
+              <label htmlFor="certificate" className="text-sm font-medium">
+                Certificate (optional)
+              </label>
+              <input
+                id="certificate"
+                name="certificate"
+                type="file"
+                accept="application/pdf,image/jpeg,image/png"
+                className="mt-3 block max-w-full text-sm"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">PDF, JPG or PNG · maximum 10 MB</p>
+            </div>
+            <div>
+              <label htmlFor="supporting" className="text-sm font-medium">
+                Supporting documents (optional)
+              </label>
+              <input
+                id="supporting"
+                name="supporting"
+                type="file"
+                multiple
+                accept="application/pdf,image/jpeg,image/png"
+                className="mt-3 block max-w-full text-sm"
+              />
+              <p className="mt-2 text-xs text-muted-foreground">Up to four documents in total</p>
+            </div>
+          </div>
+          <label className="flex items-start gap-3 text-sm">
+            <input type="checkbox" required name="authorization" className="mt-1 accent-primary" />
+            <span>
+              I am authorised to submit this IP record and its documents for verification.
+            </span>
+          </label>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <p className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Lock className="h-4 w-4" />
+              Owner and authorised administrators only
+            </p>
+            <Button disabled={busy} type="submit">
+              {busy ? <Loader2 className="animate-spin" /> : <FileSearch />}
+              {busy ? "Submitting…" : "Submit verification"}
+            </Button>
+          </div>
+        </form>
+      </main>
+    </>
+  );
+}
