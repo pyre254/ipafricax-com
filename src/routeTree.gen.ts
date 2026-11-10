@@ -30,6 +30,7 @@ import { Route as AuthenticatedVerificationHistoryRouteImport } from './routes/_
 import { Route as AuthenticatedVerificationNewRouteImport } from './routes/_authenticated.verification_.new'
 import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
 import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
+import { Route as ApiPublicMpesaCallbackRouteImport } from './routes/api/public/mpesa/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -140,6 +141,11 @@ const ApiAiValueRoute = ApiAiValueRouteImport.update({
   path: '/api/ai/value',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMpesaCallbackRoute = ApiPublicMpesaCallbackRouteImport.update({
+  id: '/api/public/mpesa/callback',
+  path: '/api/public/mpesa/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
+  '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
+  '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/_authenticated/verification_/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
+  '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
+    | '/api/public/mpesa/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
+    | '/api/public/mpesa/callback'
   id:
     | '__root__'
     | '/'
@@ -275,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/verification_/new'
     | '/api/ai/search'
     | '/api/ai/value'
+    | '/api/public/mpesa/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -287,6 +299,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRouteWithChildren
   ApiAiSearchRoute: typeof ApiAiSearchRoute
   ApiAiValueRoute: typeof ApiAiValueRoute
+  ApiPublicMpesaCallbackRoute: typeof ApiPublicMpesaCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -438,6 +451,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiValueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mpesa/callback': {
+      id: '/api/public/mpesa/callback'
+      path: '/api/public/mpesa/callback'
+      fullPath: '/api/public/mpesa/callback'
+      preLoaderRoute: typeof ApiPublicMpesaCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -495,6 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRouteWithChildren,
   ApiAiSearchRoute: ApiAiSearchRoute,
   ApiAiValueRoute: ApiAiValueRoute,
+  ApiPublicMpesaCallbackRoute: ApiPublicMpesaCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

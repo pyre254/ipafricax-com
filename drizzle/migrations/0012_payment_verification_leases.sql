@@ -1,0 +1,3 @@
+ALTER TABLE public.listing_payments ADD COLUMN check_lease_until timestamptz;
+CREATE OR REPLACE FUNCTION public.claim_listing_payment_check(p_id uuid) RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN UPDATE public.listing_payments SET check_lease_until=now()+interval '1 minute' WHERE id=p_id AND status IN ('pending','unknown') AND checkout_request_id IS NOT NULL AND (check_lease_until IS NULL OR check_lease_until<now()); RETURN FOUND; END $$;
+REVOKE ALL ON FUNCTION public.claim_listing_payment_check(uuid) FROM PUBLIC,anon,authenticated; GRANT EXECUTE ON FUNCTION public.claim_listing_payment_check(uuid) TO service_role;

@@ -1,0 +1,11 @@
+import {test,expect} from "bun:test";
+import {RENEWAL_AMOUNT_KES,RENEWAL_DAYS,NAIROBI_TIMEZONE,renewalExpiry,reminderDays,visibilityStatus,normalizeMpesaPhone} from "../src/lib/listing-visibility";
+test("each renewal costs exactly KSh 1000",()=>expect(RENEWAL_AMOUNT_KES).toBe(1000));
+test("each paid period is exactly 30 days",()=>expect(RENEWAL_DAYS).toBe(30));
+test("early payments extend existing expiry by 30 days",()=>expect(renewalExpiry("2026-12-01T12:00:00Z","2026-11-20T12:00:00Z")).toBe("2026-12-31T12:00:00.000Z"));
+test("late payments start 30 days from confirmation",()=>expect(renewalExpiry("2026-11-01T12:00:00Z","2026-11-10T12:00:00Z")).toBe("2026-12-10T12:00:00.000Z"));
+test("expired listings are suspended at their exact expiry",()=>expect(visibilityStatus("2026-11-10T12:00:00Z",false,Date.parse("2026-11-10T12:00:00Z"))).toBe("Suspended"));
+test("free reminders are 14, 7 and 3 days",()=>expect(reminderDays("introductory")).toEqual([14,7,3]));
+test("paid reminders are 7 and 3 days",()=>expect(reminderDays("paid")).toEqual([7,3]));
+test("business dates use Africa/Nairobi",()=>expect(NAIROBI_TIMEZONE).toBe("Africa/Nairobi"));
+test("local phone numbers are normalized for Daraja",()=>expect(normalizeMpesaPhone("0724573350")).toBe("254724573350"));
