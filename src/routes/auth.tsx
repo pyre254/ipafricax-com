@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ShieldCheck, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HomeLink } from "@/components/home-link";
+import { accountCategoryGroups } from "@/lib/account-categories";
 import { authDestinations, postSignInDestination } from "@/lib/auth-destinations";
 import {
   CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
@@ -123,7 +124,7 @@ function AuthPage() {
             {isSignup ? "Create your account" : "Welcome back"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {isSignup ? "Tell us a bit about you to get personalized listings and matches." : next === "admin-verification" ? "Sign in to access administrator IP verification." : next === "list-service" ? "Sign in to list a professional service." : "Sign in to manage your portfolio and deals."}
+            {isSignup ? "Join as an inventor, buyer, organization or IP professional." : next === "admin-verification" ? "Sign in to access administrator IP verification." : next === "list-service" ? "Sign in to manage your professional profile." : "Sign in to manage your portfolio and deals."}
           </p>
 
           <form onSubmit={submit} className="mt-8 space-y-4">
@@ -132,20 +133,18 @@ function AuthPage() {
                 <Field label="Full name">
                   <input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="input" />
                 </Field>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="Organization">
+                  <Field label="Organization (optional)">
                     <input value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} className="input" />
                   </Field>
-                  <Field label="Type">
-                    <select value={form.orgType} onChange={(e) => setForm({ ...form, orgType: e.target.value })} className="input">
-                      <option value="inventor">Independent inventor</option>
-                      <option value="startup">Startup</option>
-                      <option value="university">University / TTO</option>
-                      <option value="corporate">Corporate</option>
-                      <option value="law_firm">Law firm / Agent</option>
+                  <Field label="Profession / organization type">
+                    <select aria-label="Profession / organization type" value={form.orgType} onChange={(e) => setForm({ ...form, orgType: e.target.value })} className="input">
+                      {accountCategoryGroups.map((group) => (
+                        <optgroup key={group.label} label={group.label}>
+                          {group.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                        </optgroup>
+                      ))}
                     </select>
                   </Field>
-                </div>
                 <Field label="Country">
                   <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} className="input" />
                 </Field>

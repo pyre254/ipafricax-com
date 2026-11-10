@@ -6,7 +6,7 @@ export function postSignInDestination(next: unknown) {
     case "admin-verification":
       return { to: "/admin/ip-verification" as const };
     case "list-service":
-      return { to: "/services/new" as const };
+      return { to: "/profile" as const };
     default:
       return { to: "/dashboard" as const };
   }

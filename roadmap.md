@@ -1,3 +1,8 @@
+# Professional account categories
+- [x] Remove Services discovery and submission pages/links, preserving existing listing/payment records.
+- [x] Add professional categories to account creation and editable profiles without changing privileges.
+- [x] Verify real signup and all five saved categories, old-page redirects, and account creation at 1280px/631px/375px; 45 unit tests pass.
+
 # Admin verification and per-listing renewals
 - [x] Move verification forms, history, reports, and journals into authenticator-protected Admin; ordinary accounts cannot create or run evidence checks.
 - [x] Confirm introductory periods, separate subscriptions, immediate expiry hiding, verified payment restoration, and retained history for IP and services.
@@ -7,8 +12,8 @@
 - [ ] Activate the public payment callback: publish the app (currently returns 404 at the public URL).
 
 # Discovery and Admin navigation
-- [x] Keep Marketplace and Services in the main navigation on desktop and smaller screens; verification is only inside Admin.
-- [x] Preserve authorized Admin/service destinations after sign-in and provide a way back from service submission.
+- [x] Keep Marketplace in the main navigation on desktop and smaller screens; verification is only inside Admin and professional categories are inside account creation.
+- [x] Preserve authorized Admin destinations after sign-in and redirect former Services links to account creation/profile.
 - [x] Verify public pages and signed-in navigation at 1280px, 631px and 375px; 39 unit tests pass and no browser errors.
 
 # Registration and verification checks
