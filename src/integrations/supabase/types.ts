@@ -1072,6 +1072,7 @@ export type Database = {
           merchant_request_id: string | null
           new_expiry: string | null
           owner_id: string
+          phone_confirmation_id: string | null
           phone_number: string
           provider_message: string | null
           provider_result_code: string | null
@@ -1094,6 +1095,7 @@ export type Database = {
           merchant_request_id?: string | null
           new_expiry?: string | null
           owner_id: string
+          phone_confirmation_id?: string | null
           phone_number: string
           provider_message?: string | null
           provider_result_code?: string | null
@@ -1116,6 +1118,7 @@ export type Database = {
           merchant_request_id?: string | null
           new_expiry?: string | null
           owner_id?: string
+          phone_confirmation_id?: string | null
           phone_number?: string
           provider_message?: string | null
           provider_result_code?: string | null
@@ -1132,7 +1135,65 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "listing_payments_phone_confirmation_id_fkey"
+            columns: ["phone_confirmation_id"]
+            isOneToOne: false
+            referencedRelation: "listing_renewal_confirmations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "listing_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "listing_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_renewal_confirmations: {
+        Row: {
+          amount: number
+          consumed_at: string | null
+          created_at: string
+          environment: string
+          expires_at: string
+          id: string
+          owner_id: string
+          phone_number: string
+          subscription_id: string
+        }
+        Insert: {
+          amount?: number
+          consumed_at?: string | null
+          created_at?: string
+          environment: string
+          expires_at?: string
+          id?: string
+          owner_id: string
+          phone_number: string
+          subscription_id: string
+        }
+        Update: {
+          amount?: number
+          consumed_at?: string | null
+          created_at?: string
+          environment?: string
+          expires_at?: string
+          id?: string
+          owner_id?: string
+          phone_number?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_renewal_confirmations_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_renewal_confirmations_subscription_id_fkey"
             columns: ["subscription_id"]
             isOneToOne: false
             referencedRelation: "listing_subscriptions"
@@ -1454,6 +1515,15 @@ export type Database = {
       claim_kipi_journal_internal: { Args: { p_id: string }; Returns: boolean }
       claim_listing_payment_check: { Args: { p_id: string }; Returns: boolean }
       claim_marketplace_maintenance: { Args: never; Returns: boolean }
+      consume_listing_renewal_confirmation: {
+        Args: {
+          p_environment: string
+          p_id: string
+          p_phone: string
+          p_subscription: string
+        }
+        Returns: boolean
+      }
       decide_kyc: {
         Args: { p_id: string; p_notes: string; p_status: string }
         Returns: undefined
