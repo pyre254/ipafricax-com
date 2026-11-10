@@ -8,12 +8,14 @@ import { toast } from "sonner";
 import { ShieldCheck, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HomeLink } from "@/components/home-link";
+import { authDestinations, postSignInDestination } from "@/lib/auth-destinations";
 import {
   CONTACT_EMAIL, CONTACT_EMAIL_HREF, CONTACT_PHONE_DISPLAY, CONTACT_PHONE_HREF,
 } from "@/lib/contact";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional().default("signin"),
+  next: z.enum(authDestinations).optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -23,7 +25,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { mode } = Route.useSearch();
+  const { mode, next } = Route.useSearch();
   const navigate = useNavigate();
   const router = useRouter();
   const isSignup = mode === "signup";
@@ -72,7 +74,7 @@ function AuthPage() {
         toast.success("Signed in.");
       }
       await router.invalidate();
-      await navigate({ to: "/dashboard" });
+      await navigate(postSignInDestination(next));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Authentication failed";
       toast.error(msg);
@@ -121,7 +123,7 @@ function AuthPage() {
             {isSignup ? "Create your account" : "Welcome back"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {isSignup ? "Tell us a bit about you to get personalized listings and matches." : "Sign in to manage your portfolio and deals."}
+            {isSignup ? "Tell us a bit about you to get personalized listings and matches." : next === "verify-ip" ? "Sign in to verify an IP asset." : next === "verification-history" ? "Sign in to view your private verification history." : next === "list-service" ? "Sign in to list a professional service." : "Sign in to manage your portfolio and deals."}
           </p>
 
           <form onSubmit={submit} className="mt-8 space-y-4">
@@ -182,7 +184,7 @@ function AuthPage() {
             {isSignup ? "Already have an account?" : "New to IP Africa Exchange?"}{" "}
             <Link
               to="/auth"
-              search={{ mode: isSignup ? "signin" : "signup" }}
+              search={{ mode: isSignup ? "signin" : "signup", next }}
               className="text-primary font-medium hover:underline"
             >
               {isSignup ? "Sign in" : "Create one"}
