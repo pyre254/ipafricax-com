@@ -1,6 +1,36 @@
 {
   "schema_version": 1,
   "events": {
+    "project.listing_renewal_confirmed": {
+      "event_schema_version": 1,
+      "description": "A user-initiated payment-status check independently confirms a pending Daraja payment; visibility_extended excludes sandbox payments.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "environment": {
+            "type": "string",
+            "enum": [
+              "sandbox",
+              "live"
+            ]
+          },
+          "visibility_extended": {
+            "type": "boolean"
+          },
+          "amount_kes": {
+            "type": "number"
+          },
+          "days": {
+            "type": "number"
+          }
+        }
+      }
+    },
     "project.listing_renewal_requested": {
       "event_schema_version": 1,
       "description": "Daraja accepts a newly initiated listing renewal prompt after the owner confirms phone and amount.",

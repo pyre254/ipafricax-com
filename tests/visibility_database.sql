@@ -1,5 +1,15 @@
 -- Isolated only; reuse synthetic accounts from isolated_verification.sql.
 RESET ROLE;
+-- Single-use confirmation must bind the current owner, listing, phone and environment.
+INSERT INTO listing_renewal_confirmations(id,subscription_id,owner_id,phone_number,environment) SELECT '80000000-0000-0000-0000-000000000001',id,owner_id,'254700000000','sandbox' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'another user cannot consume phone confirmation');
+SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',false);
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254711111111','sandbox'),'changing the phone requires new confirmation');
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','live'),'sandbox consent cannot authorise a live charge');
+SELECT pg_temp.assert_true(consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'correct owner consumes the matching confirmation');
+SELECT pg_temp.assert_true(NOT consume_listing_renewal_confirmation('80000000-0000-0000-0000-000000000001',(SELECT id FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'254700000000','sandbox'),'confirmation cannot be reused');
+RESET ROLE;
 SELECT set_config('request.jwt.claim.sub','',false);
 INSERT INTO public.ip_listings(id,owner_id,title,ip_type,abstract,documents,status,verification_status) VALUES('30000000-0000-0000-0000-000000000099','10000000-0000-0000-0000-000000000001','Visibility fixture','patent','Synthetic visibility test','[{"kind":"registration_certificate","path":"10000000-0000-0000-0000-000000000001/cert.png"}]','active','verified');
 SELECT pg_temp.assert_true((SELECT introductory_expires_at=((published_at AT TIME ZONE 'Africa/Nairobi')+interval '3 months') AT TIME ZONE 'Africa/Nairobi' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'free period is three calendar months from publication');
