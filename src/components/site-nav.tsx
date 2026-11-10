@@ -23,10 +23,11 @@ export function SiteNav() {
         </Link>
         <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-foreground/70">
           <Link to="/marketplace" className="hover:text-navy transition-colors">Marketplace</Link>
+          <Link to="/verification" className="hover:text-navy transition-colors">IP verification</Link>
           {user && <Link to="/dashboard" className="hover:text-navy transition-colors">Dashboard</Link>}
           {user && <Link to="/profile" className="hover:text-navy transition-colors">Profile</Link>}
           {user && hasRole("rights_holder") && <Link to="/listings/new" className="hover:text-navy transition-colors">List IP</Link>}
-          {user && <Link to="/kyc" className="hover:text-navy transition-colors">Verification</Link>}
+          {user && <Link to="/kyc" className="hover:text-navy transition-colors">Identity</Link>}
           {(hasRole("admin") || hasRole("verifier")) && <Link to="/admin" className="hover:text-navy transition-colors">Admin</Link>}
         </nav>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
