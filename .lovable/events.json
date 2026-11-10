@@ -151,6 +151,37 @@
           }
         }
       }
+    },
+    "project.verification_submitted_v2": {
+      "event_schema_version": 1,
+      "description": "Successful private verification submission with a bounded non-personal asset category.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "asset_category": {
+            "type": "string",
+            "enum": [
+              "patent",
+              "utility_model",
+              "industrial_design",
+              "trademark",
+              "copyright",
+              "trade_secret"
+            ]
+          },
+          "has_certificate": {
+            "type": "boolean"
+          },
+          "linked_listing": {
+            "type": "boolean"
+          }
+        }
+      }
     }
   }
 }
