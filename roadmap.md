@@ -11,16 +11,19 @@
 - [x] Verify buyer/admin recovery, existing authenticator checks, expired links, favicon, homepage navigation, and registration tests; inbox delivery remains unverified.
 
 # KIPI IP verification centre
-- [ ] Discover official journal archives from 2008 and document actual coverage.
-- [ ] Add private verification requests, evidence, results, reviews and auditable journal processing.
-- [ ] Build centre, submission, history, results, administrator journal/review screens and listing integration.
-- [ ] Connect asynchronous PDF/OCR processing and implement journal discovery/indexing and certificate comparison.
-- [ ] Add secure PDF reports, notifications, daily synchronization and clear failure/coverage states.
-- [ ] Test verification rules, access controls, official-source processing and browser flows; record external blockers.
+- [x] Discover 28 official source links spanning 2008–2026; import January 2008 evidence with physical page citations.
+- [x] Add private verification requests, evidence, results, reviews and auditable journal processing.
+- [x] Build centre, submission, history, results, administrator journal/review screens and listing integration.
+- [x] Add bounded native PDF processing, certificate comparison and clear manual-review flags for scanned pages (OCR declined).
+- [x] Add private PDF reports, in-app notifications, daily source discovery/indexing at 08:00 Nairobi and failure/coverage states.
+- [x] Verify a real 2008 application match and report download/readback; test privacy, MFA and review semantics in isolation.
+- [ ] Verify real-browser administrator review and certificate AI extraction: requires administrator authenticator code and an actual certificate.
 
 # Listing visibility and M-Pesa renewals
-- [ ] Add per-listing three-calendar-month introductory visibility from approval/publication, and KSh 1,000 / 30-day renewals.
-- [ ] Add professional service listings, owner renewal controls and administrator visibility/payment monitoring.
-- [ ] Connect Safaricom Daraja STK Push, verify payment status and deduplicate confirmed renewals.
-- [ ] Add Nairobi-time expiry enforcement, in-app reminders (free: 14/7/3 days; paid: 7/3 days), and email when configured.
-- [ ] Test exact renewal prices/durations, expiry visibility, early/late renewal and payment authorization.
+- [x] Add per-listing three-calendar-month introductory visibility from approval/publication and KSh 1,000 / 30-day renewals.
+- [x] Add professional service listings, owner renewal controls and administrator visibility/payment monitoring.
+- [x] Add direct Daraja STK Push, independent callback status queries, payment leases and transactional deduplication; direct authorization verified.
+- [x] Enforce expiry on public reads immediately; daily in-app reminders use free 14/7/3 and paid 7/3 days.
+- [x] Test exact prices/durations, early/late renewal, duplicate and test payments, expiry privacy and service approval; 74 database checks and 29 unit tests pass.
+- [ ] Verify M-Pesa prompt/payment end-to-end: requires an approved listing owned by a test payer and phone confirmation; live mode remains off.
+- [ ] Add/send email reminders: sender domain setup required; no email domain currently configured.
