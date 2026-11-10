@@ -12,3 +12,5 @@
 - Homepage icon links share HomeLink, and the navigation brand mark uses the favicon asset, so all account and content pages keep consistent home access.
 - KIPI journal evidence and private certificate checks are separate from marketplace approval; bounded server processing preserves source passages and uncertain publication status rather than inferring legal ownership.
 - Listing visibility is enforced by database read policies against per-listing expiry timestamps; approval and verified payments create periods transactionally, while owner read paths retain suspended listings.
+- Daraja STK uses explicitly authorized direct server credentials; unsigned callbacks only trigger independent STK status queries, and locked payment application prevents duplicate periods and excludes test payments from live visibility.
+- One authenticated daily maintenance job handles expiry reminders, official journal discovery and at most ten PDF pages; source failures retain previous evidence and database leases prevent concurrent processing.
