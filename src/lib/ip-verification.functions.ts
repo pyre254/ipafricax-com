@@ -10,7 +10,7 @@ export const listVerifications=createServerFn({method:"POST"}).middleware([requi
   if(data.admin){const {data:allowed}=await context.supabase.rpc("has_role",{_user_id:context.userId,_role:"admin"});if(!allowed)throw new Error("Administrator MFA required.");}
   let query=context.supabase.from("ip_verification_requests").select("*",{count:"exact"}).order("created_at",{ascending:false});if(!data.admin)query=query.eq("user_id",context.userId);
   const {data:rows,error,count}=await query.range((data.page-1)*25,data.page*25-1);if(error)throw error;
-  const {data:stats,error:statsError}=await context.supabase.from("ip_verification_requests").select("verification_status,submission_status").eq("user_id",context.userId);if(statsError)throw statsError;
+  let statsQuery=context.supabase.from("ip_verification_requests").select("verification_status,submission_status");if(!data.admin)statsQuery=statsQuery.eq("user_id",context.userId);const {data:stats,error:statsError}=await statsQuery;if(statsError)throw statsError;
   return {rows:rows??[],count:count??0,stats:stats??[]};
 });
 export const getVerification=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
@@ -28,25 +28,29 @@ export const getVerification=createServerFn({method:"POST"}).middleware([require
   return {request,result:latest,documents:documents.data??[],reviews:reviews.data??[],audit:audit.data??[],evidence:evidence.data??[],record:record.data};
 });
 export const submitVerification=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>{if(!(input instanceof FormData))throw new Error("Invalid submission.");return input;}).handler(async({data,context})=>{
+  const {data:allowed,error:roleError}=await context.supabase.rpc("has_role",{_user_id:context.userId,_role:"admin"});if(roleError||!allowed)throw new Error("Administrator MFA required.");
   const facts=submissionSchema.parse(JSON.parse(String(data.get("facts")||"{}")));
   const files: {file:File;kind:"certificate"|"supporting"}[]=[...data.getAll("certificate").filter((f):f is File=>f instanceof File&&f.size>0).map(file=>({file,kind:"certificate" as const})),...data.getAll("supporting").filter((f):f is File=>f instanceof File&&f.size>0).map(file=>({file,kind:"supporting" as const}))];
   if(files.length>4)throw new Error("Upload no more than four documents.");
   const validated=[];for(const {file,kind} of files){const bytes=new Uint8Array(await file.arrayBuffer());const mime=validateDocument(bytes,file.type);const hash=[...new Uint8Array(await crypto.subtle.digest("SHA-256",bytes))].map(b=>b.toString(16).padStart(2,"0")).join("");validated.push({file,kind,bytes,mime,hash});}
-  const {data:request,error}=await context.supabase.from("ip_verification_requests").insert({...facts,certificate_number:facts.certificate_number||null,ip_title:facts.ip_title||null,application_date:facts.application_date||null,claimed_registration_date:facts.claimed_registration_date||null,user_id:context.userId,normalized_registration_number:normalizeNumber(facts.registration_number)}).select("*").single();if(error||!request)throw new Error(error?.message||"Could not submit verification.");
+  let ownerId=context.userId;
+  if(facts.listing_id){const {data:listing,error}=await context.supabase.from("ip_listings").select("owner_id").eq("id",facts.listing_id).single();if(error||!listing)throw new Error("Listing not found or access denied.");ownerId=listing.owner_id;}
+  const {data:request,error}=await context.supabase.from("ip_verification_requests").insert({...facts,certificate_number:facts.certificate_number||null,ip_title:facts.ip_title||null,application_date:facts.application_date||null,claimed_registration_date:facts.claimed_registration_date||null,user_id:ownerId,normalized_registration_number:normalizeNumber(facts.registration_number)}).select("*").single();if(error||!request)throw new Error(error?.message||"Could not submit verification.");
   const {supabaseAdmin}=await import("@/integrations/supabase/client.server");
   try{for(const item of validated){
-    const path=`${context.userId}/requests/${request.id}/${item.kind}-${crypto.randomUUID()}`;
+    const path=`${ownerId}/requests/${request.id}/${item.kind}-${crypto.randomUUID()}`;
     const {error:uploadError}=await supabaseAdmin.storage.from("ip-verification-private").upload(path,item.bytes,{contentType:item.mime});if(uploadError)throw uploadError;
     const {error:docError}=await supabaseAdmin.from("ip_verification_documents").insert({verification_request_id:request.id,document_type:item.kind,storage_path:path,original_filename:item.file.name,mime_type:item.mime,file_size:item.file.size,sha256_hash:item.hash,uploaded_by:context.userId});if(docError)throw docError;
   }
   const {error:auditError}=await supabaseAdmin.from("ip_verification_audit_logs").insert({verification_request_id:request.id,actor_id:context.userId,action:"verification.submitted",details:{document_count:validated.length}});if(auditError)throw auditError;
-  await supabaseAdmin.from("notifications").insert({user_id:context.userId,kind:"ip_verification",title:"IP verification submitted",body:`Reference ${request.verification_reference}`,listing_id:request.listing_id});
+  await supabaseAdmin.from("notifications").insert({user_id:ownerId,kind:"ip_verification",title:"IP verification submitted",body:`Reference ${request.verification_reference}`,listing_id:request.listing_id});
   return {id:request.id};
   }catch(error){await supabaseAdmin.from("ip_verification_requests").update({submission_status:"failed",processing_error:"Submission documents could not all be stored."}).eq("id",request.id);throw error;}
 });
 
 const certificateSchema=ownershipDetailsSchema;
 export const runVerification=createServerFn({method:"POST"}).middleware([requireSupabaseAuth]).inputValidator((input:unknown)=>z.object({id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
+  const {data:allowed}=await context.supabase.rpc("has_role",{_user_id:context.userId,_role:"admin"});if(!allowed)throw new Error("Administrator MFA required.");
   const {data:request,error:requestError}=await context.supabase.from("ip_verification_requests").select("*").eq("id",data.id).single();if(requestError||!request)throw new Error("Verification not found or access denied.");
   const {data:claimed,error:claimError}=await context.supabase.rpc("claim_ip_verification",{p_id:data.id});if(claimError||!claimed)throw new Error("This request is already processed, reviewed or currently running.");
   const {supabaseAdmin}=await import("@/integrations/supabase/client.server");

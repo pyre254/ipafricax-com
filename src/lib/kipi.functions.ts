@@ -1,14 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { KIPI_SOURCE, KIPI_START_YEAR, officialFileUrl } from "./ip-verification";
 
-export const journalCoverage = createServerFn({ method: "GET" }).handler(async () => {
-  const url=process.env["SUPABASE_URL"],key=process.env["SUPABASE_PUBLISHABLE_KEY"];
-  if (!url || !key) throw new Error("Journal catalogue is unavailable.");
-  const client=createClient<Database>(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:(input,init)=>{const headers=new Headers(init?.headers);if(key.startsWith("sb_")&&headers.get("Authorization")===`Bearer ${key}`)headers.delete("Authorization");headers.set("apikey",key);return fetch(input,{...init,headers});}}});
+export const journalCoverage = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({context}) => {
+  const {data:allowed}=await context.supabase.rpc("has_role",{_user_id:context.userId,_role:"admin"});
+  if(!allowed)throw new Error("Administrator MFA required.");
+  const client=context.supabase;
   const [journals,sync,pages,records]=await Promise.all([
     client.from("kipi_journals").select("*").order("publication_year",{ascending:false}).order("publication_month",{ascending:false}).limit(600),
     client.from("kipi_sync_runs").select("*").order("started_at",{ascending:false}).limit(1).maybeSingle(),
