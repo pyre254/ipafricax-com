@@ -1060,6 +1060,7 @@ export type Database = {
         Row: {
           amount: number
           applied_at: string | null
+          check_lease_until: string | null
           checkout_request_id: string | null
           confirmation_method: string | null
           confirmed_at: string | null
@@ -1081,6 +1082,7 @@ export type Database = {
         Insert: {
           amount?: number
           applied_at?: string | null
+          check_lease_until?: string | null
           checkout_request_id?: string | null
           confirmation_method?: string | null
           confirmed_at?: string | null
@@ -1102,6 +1104,7 @@ export type Database = {
         Update: {
           amount?: number
           applied_at?: string | null
+          check_lease_until?: string | null
           checkout_request_id?: string | null
           confirmation_method?: string | null
           confirmed_at?: string | null
@@ -1430,6 +1433,7 @@ export type Database = {
       }
       claim_ip_verification: { Args: { p_id: string }; Returns: boolean }
       claim_kipi_journal: { Args: { p_id: string }; Returns: boolean }
+      claim_listing_payment_check: { Args: { p_id: string }; Returns: boolean }
       decide_kyc: {
         Args: { p_id: string; p_notes: string; p_status: string }
         Returns: undefined
