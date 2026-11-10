@@ -137,7 +137,7 @@ function AuthPage() {
                     <input value={form.organization} onChange={(e) => setForm({ ...form, organization: e.target.value })} className="input" />
                   </Field>
                   <Field label="Profession / organization type">
-                    <select value={form.orgType} onChange={(e) => setForm({ ...form, orgType: e.target.value })} className="input">
+                    <select aria-label="Profession / organization type" value={form.orgType} onChange={(e) => setForm({ ...form, orgType: e.target.value })} className="input">
                       {accountCategoryGroups.map((group) => (
                         <optgroup key={group.label} label={group.label}>
                           {group.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
