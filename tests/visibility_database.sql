@@ -1,0 +1,26 @@
+-- Isolated only; reuse synthetic accounts from isolated_verification.sql.
+RESET ROLE;
+INSERT INTO public.ip_listings(id,owner_id,title,ip_type,abstract,documents,status,verification_status) VALUES('30000000-0000-0000-0000-000000000099','10000000-0000-0000-0000-000000000001','Visibility fixture','patent','Synthetic visibility test','[{"kind":"registration_certificate","path":"10000000-0000-0000-0000-000000000001/cert.png"}]','active','verified');
+SELECT pg_temp.assert_true((SELECT introductory_expires_at=((published_at AT TIME ZONE 'Africa/Nairobi')+interval '3 months') AT TIME ZONE 'Africa/Nairobi' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'free period is three calendar months from publication');
+UPDATE listing_subscriptions SET expires_at='2026-01-01T00:00:00Z' WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SET ROLE anon; SELECT set_config('request.jwt.claim.sub','',false);
+SELECT pg_temp.assert_true((SELECT count(*)=0 FROM ip_listings WHERE id='30000000-0000-0000-0000-000000000099'),'expired listings disappear from public reads');
+RESET ROLE;SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',false);
+SELECT pg_temp.assert_true((SELECT count(*)=1 FROM ip_listings WHERE id='30000000-0000-0000-0000-000000000099'),'owner retains expired listing read access');
+SELECT pg_temp.expect_error($q$UPDATE listing_subscriptions SET expires_at=now()+interval '1 year'$q$,'permission denied','owner cannot manufacture paid visibility');
+SELECT pg_temp.expect_error($q$DELETE FROM ip_listings WHERE id='30000000-0000-0000-0000-000000000099'$q$,'permission denied','expired listings cannot be deleted by owners');
+RESET ROLE;
+INSERT INTO listing_payments(id,subscription_id,owner_id,idempotency_key,phone_number,environment,checkout_request_id,merchant_request_id) SELECT '50000000-0000-0000-0000-000000000001',id,owner_id,gen_random_uuid(),'254700000000','live','fixture-checkout','fixture-merchant' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SELECT public.apply_verified_listing_payment('50000000-0000-0000-0000-000000000001','2026-11-10T12:00:00Z','0','isolated confirmed payment');
+SELECT pg_temp.assert_true((SELECT expires_at='2026-12-10T12:00:00Z' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'late verified renewal adds thirty days from confirmation');
+SELECT public.apply_verified_listing_payment('50000000-0000-0000-0000-000000000001','2026-11-10T12:00:00Z','0','duplicate');
+SELECT pg_temp.assert_true((SELECT expires_at='2026-12-10T12:00:00Z' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'duplicate confirmation cannot extend visibility twice');
+INSERT INTO listing_payments(id,subscription_id,owner_id,idempotency_key,phone_number,environment,checkout_request_id,merchant_request_id) SELECT '50000000-0000-0000-0000-000000000002',id,owner_id,gen_random_uuid(),'254700000000','live','fixture-early','fixture-merchant2' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SELECT public.apply_verified_listing_payment('50000000-0000-0000-0000-000000000002','2026-11-20T12:00:00Z','0','early payment');
+SELECT pg_temp.assert_true((SELECT expires_at='2027-01-09T12:00:00Z' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'early verified renewal extends existing expiry thirty days');
+INSERT INTO listing_payments(id,subscription_id,owner_id,idempotency_key,phone_number,environment,checkout_request_id,merchant_request_id) SELECT '50000000-0000-0000-0000-000000000003',id,owner_id,gen_random_uuid(),'254700000000','sandbox','fixture-test','fixture-merchant3' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
+SELECT public.apply_verified_listing_payment('50000000-0000-0000-0000-000000000003','2026-11-20T12:00:00Z','0','test payment');
+SELECT pg_temp.assert_true((SELECT expires_at='2027-01-09T12:00:00Z' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'test payment cannot grant live visibility');
+SET ROLE authenticated;SELECT set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',false);
+SELECT pg_temp.assert_true((SELECT count(*)=0 FROM listing_payments),'unrelated buyer cannot read private payment records');
+RESET ROLE;
