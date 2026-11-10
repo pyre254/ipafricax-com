@@ -1,3 +1,9 @@
+# Admin verification and per-listing renewals
+- [ ] Move the verification centre and evidence tools into authenticator-protected Admin; remove public and account verification navigation.
+- [ ] Confirm introductory periods, separate subscriptions, immediate expiry hiding, verified payment restoration, and retained history for IP and services.
+- [ ] Improve dashboard monitoring, complete revenue totals, and payment callback handling.
+- [ ] Verify authenticated navigation, payment/visibility rules, and notification outcomes; email delivery awaits sender-domain setup and real payments require payer consent.
+
 # IP Verification and Services navigation
 - [x] Keep both pages in the main navigation on desktop and smaller screens without crowding account links.
 - [x] Preserve verification/service destinations after sign-in and provide a way back from service submission.
