@@ -32,6 +32,7 @@ import { Route as AuthenticatedVerificationHistoryRouteImport } from './routes/_
 import { Route as AuthenticatedVerificationNewRouteImport } from './routes/_authenticated.verification_.new'
 import { Route as ApiAiSearchRouteImport } from './routes/api/ai.search'
 import { Route as ApiAiValueRouteImport } from './routes/api/ai.value'
+import { Route as ApiPublicMaintenanceRouteImport } from './routes/api/public/maintenance'
 import { Route as ApiPublicMpesaCallbackRouteImport } from './routes/api/public/mpesa/callback'
 
 const IndexRoute = IndexRouteImport.update({
@@ -154,6 +155,11 @@ const ApiAiValueRoute = ApiAiValueRouteImport.update({
   path: '/api/ai/value',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMaintenanceRoute = ApiPublicMaintenanceRouteImport.update({
+  id: '/api/public/maintenance',
+  path: '/api/public/maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicMpesaCallbackRoute = ApiPublicMpesaCallbackRouteImport.update({
   id: '/api/public/mpesa/callback',
   path: '/api/public/mpesa/callback',
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
+  '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/verification/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
+  '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRoutesById {
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/verification_/new': typeof AuthenticatedVerificationNewRoute
   '/api/ai/search': typeof ApiAiSearchRoute
   '/api/ai/value': typeof ApiAiValueRoute
+  '/api/public/maintenance': typeof ApiPublicMaintenanceRoute
   '/api/public/mpesa/callback': typeof ApiPublicMpesaCallbackRoute
 }
 export interface FileRouteTypes {
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
+    | '/api/public/maintenance'
     | '/api/public/mpesa/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/verification/new'
     | '/api/ai/search'
     | '/api/ai/value'
+    | '/api/public/maintenance'
     | '/api/public/mpesa/callback'
   id:
     | '__root__'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/_authenticated/verification_/new'
     | '/api/ai/search'
     | '/api/ai/value'
+    | '/api/public/maintenance'
     | '/api/public/mpesa/callback'
   fileRoutesById: FileRoutesById
 }
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRouteWithChildren
   ApiAiSearchRoute: typeof ApiAiSearchRoute
   ApiAiValueRoute: typeof ApiAiValueRoute
+  ApiPublicMaintenanceRoute: typeof ApiPublicMaintenanceRoute
   ApiPublicMpesaCallbackRoute: typeof ApiPublicMpesaCallbackRoute
 }
 
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAiValueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/maintenance': {
+      id: '/api/public/maintenance'
+      path: '/api/public/maintenance'
+      fullPath: '/api/public/maintenance'
+      preLoaderRoute: typeof ApiPublicMaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/mpesa/callback': {
       id: '/api/public/mpesa/callback'
       path: '/api/public/mpesa/callback'
@@ -558,6 +578,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRouteWithChildren,
   ApiAiSearchRoute: ApiAiSearchRoute,
   ApiAiValueRoute: ApiAiValueRoute,
+  ApiPublicMaintenanceRoute: ApiPublicMaintenanceRoute,
   ApiPublicMpesaCallbackRoute: ApiPublicMpesaCallbackRoute,
 }
 export const routeTree = rootRouteImport

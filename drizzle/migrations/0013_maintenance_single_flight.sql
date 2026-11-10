@@ -1,0 +1,7 @@
+CREATE TABLE public.marketplace_maintenance_state(singleton boolean PRIMARY KEY DEFAULT true CHECK(singleton),lease_until timestamptz,last_completed_at timestamptz);
+GRANT SELECT ON public.marketplace_maintenance_state TO authenticated; GRANT ALL ON public.marketplace_maintenance_state TO service_role;
+ALTER TABLE public.marketplace_maintenance_state ENABLE ROW LEVEL SECURITY;
+CREATE POLICY maintenance_admin_read ON public.marketplace_maintenance_state FOR SELECT TO authenticated USING(public.has_role(auth.uid(),'admin'));
+CREATE OR REPLACE FUNCTION public.claim_marketplace_maintenance() RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN INSERT INTO public.marketplace_maintenance_state(singleton,lease_until) VALUES(true,now()+interval '5 minutes') ON CONFLICT(singleton) DO UPDATE SET lease_until=EXCLUDED.lease_until WHERE marketplace_maintenance_state.lease_until IS NULL OR marketplace_maintenance_state.lease_until<now(); RETURN FOUND; END $$;
+CREATE OR REPLACE FUNCTION public.release_marketplace_maintenance() RETURNS void LANGUAGE sql SECURITY DEFINER SET search_path=public AS $$ UPDATE public.marketplace_maintenance_state SET lease_until=NULL,last_completed_at=now() WHERE singleton $$;
+REVOKE ALL ON FUNCTION public.claim_marketplace_maintenance(),public.release_marketplace_maintenance() FROM PUBLIC,anon,authenticated; GRANT EXECUTE ON FUNCTION public.claim_marketplace_maintenance(),public.release_marketplace_maintenance() TO service_role;
