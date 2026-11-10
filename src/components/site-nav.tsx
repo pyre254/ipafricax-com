@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, LogOut, ShieldCheck, LayoutDashboard, Plus, Menu, UserRound, BriefcaseBusiness, FileSearch, Store, ChevronDown } from "lucide-react";
+import { ArrowRight, LogOut, ShieldCheck, LayoutDashboard, Plus, Menu, UserRound, BriefcaseBusiness, Store, ChevronDown } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -11,9 +11,6 @@ function PrimaryLinks() {
   return <>
     <Button asChild variant="ghost" className="h-11 min-w-0 flex-1 rounded-none px-2 text-xs sm:px-3 sm:text-sm lg:flex-none">
       <Link to="/marketplace" activeOptions={{ exact: true }} activeProps={{ className: "bg-primary/5 text-primary" }}><Store />Marketplace</Link>
-    </Button>
-    <Button asChild variant="ghost" className="h-11 min-w-0 flex-1 rounded-none px-2 text-xs sm:px-3 sm:text-sm lg:flex-none">
-      <Link to="/verification" activeProps={{ className: "bg-primary/5 text-primary" }}><FileSearch />IP Verification</Link>
     </Button>
     <Button asChild variant="ghost" className="h-11 min-w-0 flex-1 rounded-none px-2 text-xs sm:px-3 sm:text-sm lg:flex-none">
       <Link to="/services" activeProps={{ className: "bg-primary/5 text-primary" }}><BriefcaseBusiness />Services</Link>
@@ -67,10 +64,9 @@ export function SiteNav() {
                 <DropdownMenuItem asChild><Link to="/dashboard"><LayoutDashboard />Dashboard</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/profile"><UserRound />Profile</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/kyc"><ShieldCheck />Identity verification</Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/verification/history"><FileSearch />My verifications</Link></DropdownMenuItem>
                 {hasRole("rights_holder") && <DropdownMenuItem asChild><Link to="/listings/new"><Plus />List IP</Link></DropdownMenuItem>}
                 <DropdownMenuItem asChild><Link to="/services/new"><BriefcaseBusiness />List a service</Link></DropdownMenuItem>
-                {(hasRole("admin") || hasRole("verifier")) && <DropdownMenuItem asChild><Link to="/admin"><ShieldCheck />Review submissions</Link></DropdownMenuItem>}
+                {(hasRole("admin") || hasRole("verifier")) && <DropdownMenuItem asChild><Link to="/admin"><ShieldCheck />Admin</Link></DropdownMenuItem>}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem disabled={signingOut} onSelect={() => { void handleSignOut(); }}><LogOut />{signingOut ? "Signing out…" : "Sign out"}</DropdownMenuItem>
               </> : <>
