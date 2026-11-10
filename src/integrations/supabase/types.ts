@@ -1544,6 +1544,7 @@ export type Database = {
         Args: { p_ip?: string; p_service?: string }
         Returns: boolean
       }
+      listing_portfolio_totals: { Args: { p_admin?: boolean }; Returns: Json }
       manage_account_role: {
         Args: {
           p_enabled: boolean
