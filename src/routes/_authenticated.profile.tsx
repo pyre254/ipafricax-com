@@ -6,6 +6,7 @@ import { Save, UserRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { accountRoles } from "@/lib/account-roles";
+import { accountCategoryGroups } from "@/lib/account-categories";
 import { pageMeta } from "@/lib/page-meta";
 import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/site-nav";
@@ -47,7 +48,7 @@ function ProfileForm({ initial, userId, email }: { initial: ProfileData; userId:
   } catch { toast.error("Could not save your profile."); } finally { setBusy(false); } }} className="space-y-5">
     <p className="break-all text-sm text-muted-foreground">{email}</p>
     {([['full_name', 'Full name'], ['organization', 'Organization'], ['country', 'Country']] as const).map(([key, label]) => <label key={key} className="block text-sm font-medium">{label}<input required={key === 'full_name'} maxLength={200} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} className="mt-2 w-full rounded-lg border border-input bg-card px-3 py-2 font-normal" /></label>)}
-    <label className="block text-sm font-medium">Organization type<select value={form.org_type} onChange={(e) => setForm({ ...form, org_type: e.target.value })} className="mt-2 w-full rounded-lg border border-input bg-card px-3 py-2 font-normal"><option value="inventor">Independent inventor</option><option value="startup">Startup</option><option value="university">University / TTO</option><option value="corporate">Corporate</option><option value="law_firm">Law firm / Agent</option></select></label>
+    <label className="block text-sm font-medium">Profession / organization type<select value={form.org_type} onChange={(e) => setForm({ ...form, org_type: e.target.value })} className="mt-2 w-full rounded-lg border border-input bg-card px-3 py-2 font-normal">{accountCategoryGroups.map((group) => <optgroup key={group.label} label={group.label}>{group.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</optgroup>)}</select></label>
     <label className="block text-sm font-medium">About you<textarea value={form.bio} maxLength={2000} rows={4} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="mt-2 w-full rounded-lg border border-input bg-card px-3 py-2 font-normal" /></label>
     <Button disabled={busy} type="submit"><Save />{busy ? "Saving…" : "Save profile"}</Button>
   </form>;

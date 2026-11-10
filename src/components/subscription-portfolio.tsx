@@ -1,8 +1,7 @@
-import { Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Banknote, RefreshCw, Plus, EyeOff, Eye, Loader2 } from "lucide-react";
+import { Banknote, RefreshCw, EyeOff, Eye, Loader2 } from "lucide-react";
 import {
   subscriptionPortfolio,
   prepareListingRenewal,
@@ -49,14 +48,6 @@ export function SubscriptionPortfolio({ admin = false }: { admin?: boolean }) {
         <h2 className="text-xl font-semibold">
           {admin ? "Listing visibility & revenue" : "Visibility & renewals"}
         </h2>
-        {!admin && (
-          <Button asChild variant="outline">
-            <Link to="/services/new">
-              <Plus />
-              List a professional service
-            </Link>
-          </Button>
-        )}
       </div>
       <div className="mt-5 grid grid-cols-2 gap-5 border-y border-border py-5 md:grid-cols-4">
         {[
@@ -284,7 +275,7 @@ export function SubscriptionPortfolio({ admin = false }: { admin?: boolean }) {
           </p>
         )}
       </div>
-      <h3 className="mt-8 text-lg font-semibold">Professional service submissions</h3>
+      {data.services.length > 0 && <h3 className="mt-8 text-lg font-semibold">Professional service submissions</h3>}
       <div className="mt-3 divide-y divide-border">
         {data.services.map((s) => (
           <div key={s.id} className="flex flex-wrap justify-between gap-4 py-4">

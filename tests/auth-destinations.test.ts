@@ -9,8 +9,8 @@ describe("sign-in continuations", () => {
     expect(postSignInDestination("verification-history")).toEqual({ to: "/dashboard" });
     expect(postSignInDestination("verify-ip")).toEqual({ to: "/dashboard" });
   });
-  it("returns service submissions to their form", () => {
-    expect(postSignInDestination("list-service")).toEqual({ to: "/services/new" });
+  it("returns legacy professional sign-ins to their account profile, not the removed Services page", () => {
+    expect(postSignInDestination("list-service")).toEqual({ to: "/profile" });
   });
   it("never follows an unrecognised or external destination", () => {
     for (const next of [undefined, "https://example.com", "//example.com", "/admin", "unknown"]) {
