@@ -17,3 +17,10 @@
 - [ ] Connect asynchronous PDF/OCR processing and implement journal discovery/indexing and certificate comparison.
 - [ ] Add secure PDF reports, notifications, daily synchronization and clear failure/coverage states.
 - [ ] Test verification rules, access controls, official-source processing and browser flows; record external blockers.
+
+# Listing visibility and M-Pesa renewals
+- [ ] Add per-listing three-calendar-month introductory visibility from approval/publication, and KSh 1,000 / 30-day renewals.
+- [ ] Add professional service listings, owner renewal controls and administrator visibility/payment monitoring.
+- [ ] Connect Safaricom Daraja STK Push, verify payment status and deduplicate confirmed renewals.
+- [ ] Add Nairobi-time expiry enforcement, in-app reminders (free: 14/7/3 days; paid: 7/3 days), and email when configured.
+- [ ] Test exact renewal prices/durations, expiry visibility, early/late renewal and payment authorization.
