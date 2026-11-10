@@ -1451,6 +1451,7 @@ export type Database = {
       }
       claim_ip_verification: { Args: { p_id: string }; Returns: boolean }
       claim_kipi_journal: { Args: { p_id: string }; Returns: boolean }
+      claim_kipi_journal_internal: { Args: { p_id: string }; Returns: boolean }
       claim_listing_payment_check: { Args: { p_id: string }; Returns: boolean }
       claim_marketplace_maintenance: { Args: never; Returns: boolean }
       decide_kyc: {
