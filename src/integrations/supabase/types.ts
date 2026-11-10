@@ -1056,6 +1056,186 @@ export type Database = {
         }
         Relationships: []
       }
+      listing_payments: {
+        Row: {
+          amount: number
+          applied_at: string | null
+          checkout_request_id: string | null
+          confirmation_method: string | null
+          confirmed_at: string | null
+          created_at: string
+          currency: string
+          environment: string
+          id: string
+          idempotency_key: string
+          merchant_request_id: string | null
+          new_expiry: string | null
+          owner_id: string
+          phone_number: string
+          provider_message: string | null
+          provider_result_code: string | null
+          status: string
+          subscription_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          applied_at?: string | null
+          checkout_request_id?: string | null
+          confirmation_method?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          currency?: string
+          environment?: string
+          id?: string
+          idempotency_key: string
+          merchant_request_id?: string | null
+          new_expiry?: string | null
+          owner_id: string
+          phone_number: string
+          provider_message?: string | null
+          provider_result_code?: string | null
+          status?: string
+          subscription_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          applied_at?: string | null
+          checkout_request_id?: string | null
+          confirmation_method?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          currency?: string
+          environment?: string
+          id?: string
+          idempotency_key?: string
+          merchant_request_id?: string | null
+          new_expiry?: string | null
+          owner_id?: string
+          phone_number?: string
+          provider_message?: string | null
+          provider_result_code?: string | null
+          status?: string
+          subscription_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_payments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "listing_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_subscriptions: {
+        Row: {
+          admin_hidden: boolean
+          admin_notes: string | null
+          expires_at: string
+          id: string
+          introductory_expires_at: string
+          ip_listing_id: string | null
+          owner_id: string
+          period_type: string
+          published_at: string
+          service_listing_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_hidden?: boolean
+          admin_notes?: string | null
+          expires_at: string
+          id?: string
+          introductory_expires_at: string
+          ip_listing_id?: string | null
+          owner_id: string
+          period_type?: string
+          published_at: string
+          service_listing_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_hidden?: boolean
+          admin_notes?: string | null
+          expires_at?: string
+          id?: string
+          introductory_expires_at?: string
+          ip_listing_id?: string | null
+          owner_id?: string
+          period_type?: string
+          published_at?: string
+          service_listing_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_subscriptions_ip_listing_id_fkey"
+            columns: ["ip_listing_id"]
+            isOneToOne: true
+            referencedRelation: "ip_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_subscriptions_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_subscriptions_service_listing_id_fkey"
+            columns: ["service_listing_id"]
+            isOneToOne: true
+            referencedRelation: "service_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_visibility_events: {
+        Row: {
+          created_at: string
+          event_key: string
+          id: string
+          kind: string
+          owner_id: string
+          subscription_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_key: string
+          id?: string
+          kind: string
+          owner_id: string
+          subscription_id: string
+        }
+        Update: {
+          created_at?: string
+          event_key?: string
+          id?: string
+          kind?: string
+          owner_id?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_visibility_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "listing_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1142,6 +1322,62 @@ export type Database = {
         }
         Relationships: []
       }
+      service_listings: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          description: string
+          id: string
+          organization: string | null
+          owner_id: string
+          profession: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          organization?: string | null
+          owner_id: string
+          profession: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          organization?: string | null
+          owner_id?: string
+          profession?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_listings_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       super_admin: {
         Row: {
           created_at: string
@@ -1183,6 +1419,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_verified_listing_payment: {
+        Args: {
+          p_code: string
+          p_confirmed_at: string
+          p_id: string
+          p_message: string
+        }
+        Returns: string
+      }
       claim_ip_verification: { Args: { p_id: string }; Returns: boolean }
       claim_kipi_journal: { Args: { p_id: string }; Returns: boolean }
       decide_kyc: {
@@ -1201,6 +1446,10 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      listing_has_visibility: {
+        Args: { p_ip?: string; p_service?: string }
+        Returns: boolean
+      }
       manage_account_role: {
         Args: {
           p_enabled: boolean
@@ -1209,6 +1458,11 @@ export type Database = {
         }
         Returns: undefined
       }
+      manage_listing_visibility: {
+        Args: { p_hidden: boolean; p_id: string; p_notes: string }
+        Returns: undefined
+      }
+      process_listing_visibility_notifications: { Args: never; Returns: number }
       queue_expiry_reminders: { Args: never; Returns: number }
       review_ip_verification: {
         Args: {
@@ -1217,6 +1471,10 @@ export type Database = {
           p_id: string
           p_notes: string
         }
+        Returns: undefined
+      }
+      review_service_listing: {
+        Args: { p_approve: boolean; p_id: string; p_notes: string }
         Returns: undefined
       }
     }
