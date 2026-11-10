@@ -2,6 +2,8 @@
 RESET ROLE;
 SELECT set_config('request.jwt.claim.sub','',false);
 SELECT pg_temp.assert_true((SELECT count(*)=2 FROM listing_subscriptions WHERE owner_id='10000000-0000-0000-0000-000000000001' AND (ip_listing_id='30000000-0000-0000-0000-000000000099' OR service_listing_id='70000000-0000-0000-0000-000000000001')),'IP and service listings have separate subscriptions');
+INSERT INTO service_listings(id,owner_id,title,profession,description,contact_email) VALUES('70000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000001','Unpublished valuer fixture','ip_valuer','An isolated professional valuation service.','valuer@example.invalid');
+SELECT pg_temp.assert_true((SELECT count(*)=0 FROM listing_subscriptions WHERE service_listing_id='70000000-0000-0000-0000-000000000002'),'a service introductory period does not start before approval/publication');
 UPDATE listing_subscriptions SET expires_at=now()+interval '14 days',period_type='introductory' WHERE ip_listing_id='30000000-0000-0000-0000-000000000099';
 SELECT process_listing_visibility_notifications();
 SELECT process_listing_visibility_notifications();
@@ -30,6 +32,8 @@ SELECT pg_temp.assert_true((SELECT count(*)=0 FROM kipi_journals),'verification 
 RESET ROLE;
 INSERT INTO listing_payments(id,subscription_id,owner_id,idempotency_key,phone_number,environment,checkout_request_id,merchant_request_id) SELECT '90000000-0000-0000-0000-000000000001',id,owner_id,gen_random_uuid(),'254700000000','live','service-renewal','service-merchant' FROM listing_subscriptions WHERE service_listing_id='70000000-0000-0000-0000-000000000001';
 SELECT apply_verified_listing_payment('90000000-0000-0000-0000-000000000001',now(),'0','verified service payment');
+SELECT pg_temp.assert_true((SELECT new_expiry-confirmed_at=interval '30 days' FROM listing_payments WHERE id='90000000-0000-0000-0000-000000000001'),'late professional renewal starts thirty days from verified payment');
+SELECT pg_temp.assert_true((SELECT expires_at<now()+interval '4 days' FROM listing_subscriptions WHERE ip_listing_id='30000000-0000-0000-0000-000000000099'),'service payment does not renew another IP listing');
 SET ROLE anon;
 SELECT pg_temp.assert_true((SELECT count(*)=1 FROM service_listings WHERE id='70000000-0000-0000-0000-000000000001'),'verified live service payment restores public visibility');
 RESET ROLE;

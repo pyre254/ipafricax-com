@@ -1,12 +1,14 @@
 # Admin verification and per-listing renewals
-- [ ] Move the verification centre and evidence tools into authenticator-protected Admin; remove public and account verification navigation.
-- [ ] Confirm introductory periods, separate subscriptions, immediate expiry hiding, verified payment restoration, and retained history for IP and services.
-- [ ] Improve dashboard monitoring, complete revenue totals, and payment callback handling.
-- [ ] Verify authenticated navigation, payment/visibility rules, and notification outcomes; email delivery awaits sender-domain setup and real payments require payer consent.
+- [x] Move verification forms, history, reports, and journals into authenticator-protected Admin; ordinary accounts cannot create or run evidence checks.
+- [x] Confirm introductory periods, separate subscriptions, immediate expiry hiding, verified payment restoration, and retained history for IP and services.
+- [x] Add dashboard filters/publication dates, complete caller-scoped revenue totals, a stable public callback, and idempotent payment-failure notices/audits.
+- [x] Verify signed-in dashboard, all Admin verification MFA gates, legacy-page redirects and Services at 1280px/631px/375px with no browser errors; pricing, visibility and notifications pass isolated checks.
+- [ ] Complete real-browser review/renewal: administrator authenticator code and an approved listing owned by a consenting payer are required; live payments remain off.
+- [ ] Activate the public payment callback: publish the app (currently returns 404 at the public URL).
 
-# IP Verification and Services navigation
-- [x] Keep both pages in the main navigation on desktop and smaller screens without crowding account links.
-- [x] Preserve verification/service destinations after sign-in and provide a way back from service submission.
+# Discovery and Admin navigation
+- [x] Keep Marketplace and Services in the main navigation on desktop and smaller screens; verification is only inside Admin.
+- [x] Preserve authorized Admin/service destinations after sign-in and provide a way back from service submission.
 - [x] Verify public pages and signed-in navigation at 1280px, 631px and 375px; 39 unit tests pass and no browser errors.
 
 # Registration and verification checks
