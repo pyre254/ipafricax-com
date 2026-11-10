@@ -1,3 +1,8 @@
+# IP Verification and Services navigation
+- [ ] Keep both pages in the main navigation on desktop and smaller screens without crowding account links.
+- [ ] Preserve verification/service destinations after sign-in and provide a way back from service submission.
+- [ ] Verify public pages and signed-in navigation at desktop and mobile sizes.
+
 # Registration and verification checks
 - [x] Confirm authenticator-protected IP review at the server boundary and test decision/history/privacy rules.
 - [x] Track successful verification submissions, review outcomes and listing renewal requests/confirmations without personal data; four catalog schemas registered and validated.
