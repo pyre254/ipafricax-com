@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { analyzeCertificate, anchorCertificate } from "@/lib/certificates.functions";
 import { toast } from "sonner";
 import { FileSearch, Fingerprint, AlertTriangle, CheckCircle2, Link2 } from "lucide-react";
+import { Button } from "./ui/button";
+import { validateDocument } from "@/lib/ip-verification";
 
 type Check = { id: string; extracted: Record<string, unknown>; mismatches: { field: string; listing_value: string | null; certificate_value: string | null; severity: string; note: string }[]; match_score: number | null; created_at: string };
 type Proof = { id: string; sha256: string; record_hash: string; prev_record_hash: string | null; ots_proof: string | null; ots_calendar: string | null; file_name: string | null; created_at: string };
@@ -23,12 +25,14 @@ export function CertificateCheckPanel({ listingId, ownerId, onUploaded }: { list
     if (!file) return toast.error("Choose a certificate file first.");
     setBusy(true);
     try {
+      validateDocument(new Uint8Array(await file.arrayBuffer()),file.type);
       const path = `${ownerId}/cert-${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
       const { error } = await supabase.storage.from("ip-documents").upload(path, file, { contentType: file.type });
       if (error) throw error;
       const { data: l } = await supabase.from("ip_listings").select("documents").eq("id", listingId).single();
       const docs = Array.isArray(l?.documents) ? l.documents : [];
-      await supabase.from("ip_listings").update({ documents: [...docs, { kind: "registration_certificate", path, name: file.name }] }).eq("id", listingId);
+      const {error:saveError}=await supabase.from("ip_listings").update({ documents: [...docs, { kind: "registration_certificate", path, name: file.name }] }).eq("id", listingId);
+      if(saveError)throw new Error("Could not attach the certificate to this listing.");
       onUploaded?.();
       const row = await run({ data: { listingId, path, mimeType: file.type || "application/pdf", fileName: file.name } });
       setCheck(row as unknown as Check);
@@ -46,10 +50,10 @@ export function CertificateCheckPanel({ listingId, ownerId, onUploaded }: { list
       <div className="flex items-center gap-2 font-semibold"><FileSearch className="h-4 w-4 text-primary" /> AI certificate check</div>
       <p className="mt-1 text-sm text-muted-foreground">Upload your registration certificate (PDF or photo). AI reads it and flags anything that doesn't match this listing.</p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <input type="file" accept="application/pdf,image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="text-sm" />
-        <button disabled={busy} onClick={submit} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">
+        <input aria-label="Certificate for ownership extraction" type="file" accept="application/pdf,image/jpeg,image/png" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="max-w-full text-sm" />
+        <Button disabled={busy} onClick={submit}>
           {busy ? "Reading certificate…" : "Upload & check"}
-        </button>
+        </Button>
       </div>
 
       {check && (
@@ -60,9 +64,9 @@ export function CertificateCheckPanel({ listingId, ownerId, onUploaded }: { list
             <span className="font-mono text-sm">{check.match_score ?? 0}/100</span>
           </div>
           {typeof ex.summary === "string" && <p className="text-sm">{ex.summary}</p>}
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
             {fields.map(([label, k]) => (
-              <div key={k}><dt className="text-xs text-muted-foreground">{label}</dt><dd>{(ex[k] as string) || "—"}</dd></div>
+              <div key={k}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="break-words">{(ex[k] as string) || "Not printed / unreadable"}</dd></div>
             ))}
           </dl>
           {check.mismatches.length === 0 ? (

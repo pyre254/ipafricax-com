@@ -1,9 +1,9 @@
 # Registration and verification checks
-- [ ] Confirm authenticator-protected IP review at the server boundary and test decision/history/privacy rules.
-- [ ] Track successful verification submissions, review outcomes and listing renewal requests/confirmations without personal data.
+- [x] Confirm authenticator-protected IP review at the server boundary and test decision/history/privacy rules.
+- [x] Track successful verification submissions, review outcomes and listing renewal requests/confirmations without personal data; four catalog schemas registered and validated.
 - [ ] Configure verification/renewal sender domain: waiting for the owner to complete the email-domain dialog.
-- [ ] Add a Daraja preflight and explicit phone/amount confirmation before requesting a payment; keep live payments off.
-- [ ] Extract printed ownership details from private certificates and preserve uncertain or missing fields for review.
+- [x] Add a Daraja preflight and explicit phone/amount confirmation before requesting a payment; keep live payments off.
+- [x] Extract printed ownership details from private certificates and preserve uncertain or missing fields for review; real-certificate inference still awaits a supplied certificate.
 - [x] Set up the designated existing administrator account and explain secure sign-in.
 - [x] Add buyer/seller account profiles and administrator role management with enforced privileges.
 - [x] Run 43 isolated identity/asset/permission checks; fix missing audit and notifications on certificate changes.
