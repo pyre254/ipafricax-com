@@ -56,8 +56,7 @@ def main():
             run(connection,input=BOOTSTRAP,stdout=subprocess.DEVNULL)
             for migration in sorted((ROOT/'supabase/migrations').glob('*.sql'))+sorted((ROOT/'drizzle/migrations').glob('*.sql')):
                 run(connection+['-f',str(migration)],stdout=subprocess.DEVNULL)
-            run(connection+['-f',str(ROOT/'tests/isolated_verification.sql')],stdout=subprocess.DEVNULL)
-            run(connection+['-f',str(ROOT/'tests/visibility_database.sql')],stdout=subprocess.DEVNULL)
+            run(connection,input=(ROOT/'tests/isolated_verification.sql').read_text()+'\n'+(ROOT/'tests/visibility_database.sql').read_text(),stdout=subprocess.DEVNULL)
         finally:
             run(['pg_ctl','-D',str(base/'data'),'-m','immediate','-w','stop'],preexec_fn=demote,stdout=subprocess.DEVNULL)
 

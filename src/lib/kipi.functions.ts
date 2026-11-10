@@ -79,6 +79,14 @@ export const uploadOfficialJournal=createServerFn({method:"POST"}).middleware([r
   const bytes=new Uint8Array(await file.arrayBuffer());if(new TextDecoder().decode(bytes.slice(0,5))!=="%PDF-")throw new Error("The file is not a PDF.");
   const {supabaseAdmin}=await import("@/integrations/supabase/client.server");
   const hash=[...new Uint8Array(await crypto.subtle.digest("SHA-256",bytes))].map(b=>b.toString(16).padStart(2,"0")).join("");
+  if(source.toLowerCase().split("#")[0].endsWith(".rar")){
+    const {default:manifest}=await import("./kipi-2008-manifest.json");
+    if(!manifest.some(m=>m.source===source.split("#")[0]&&m.sha256===hash))throw new Error("This archive member has not been authenticated against the official archive. Use a direct official PDF URL or the authenticated 2008 members.");
+  }else{
+    const response=await fetch(source,{redirect:"error",signal:AbortSignal.timeout(45000)});if(!response.ok||Number(response.headers.get("content-length"))>15*1024*1024)throw new Error("Official PDF could not be independently checked.");
+    const officialBytes=new Uint8Array(await response.arrayBuffer());if(officialBytes.length>15*1024*1024)throw new Error("Official PDF exceeds safe size.");
+    const officialHash=[...new Uint8Array(await crypto.subtle.digest("SHA-256",officialBytes))].map(b=>b.toString(16).padStart(2,"0")).join("");if(hash!==officialHash)throw new Error("Uploaded PDF does not match the official KIPI file.");
+  }
   const path=`journals/manual/${hash}.pdf`;const {data:existing}=await supabaseAdmin.from("kipi_journals").select("id").eq("file_hash",hash).limit(1).maybeSingle();if(existing)return {id:existing.id};
   const {error:storageError}=await supabaseAdmin.storage.from("ip-verification-private").upload(path,bytes,{contentType:"application/pdf",upsert:true});if(storageError)throw storageError;
   const member=file.name.replace(/[^\w. -]/g,"_");
