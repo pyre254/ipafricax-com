@@ -127,6 +127,13 @@
       "when": 1794292721701,
       "tag": "0017_admin_ip_verification_and_complete_payment_totals",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794461924671,
+      "tag": "0018_restrict_profiles_and_super_admin_reads",
+      "breakpoints": true
     }
   ]
 }
